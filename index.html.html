@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIS 104 — Java Exam Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0f;--surface:#111118;--card:#16161f;--border:#2a2a3a;
+    --gold:#f0b429;--gold-dim:#b8892a;--green:#3dd68c;--red:#ff5c5c;
+    --blue:#5c9fff;--purple:#b07fff;--text:#e8e8f0;--muted:#7070a0;--code-bg:#0d0d15;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(240,180,41,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(240,180,41,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .app{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:20px;}
+  header{text-align:center;padding:40px 0 30px;border-bottom:1px solid var(--border);margin-bottom:30px;}
+  .badge{display:inline-block;background:rgba(240,180,41,0.12);border:1px solid var(--gold-dim);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:3px;margin-bottom:14px;}
+  h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.1;}
+  h1 span{color:var(--gold);}
+  .subtitle{color:var(--muted);font-size:14px;margin-top:8px;font-family:'JetBrains Mono',monospace;}
+  .nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;}
+  .nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;transition:all .2s;letter-spacing:.5px;}
+  .nav-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+  .nav-btn.active{background:rgba(240,180,41,0.12);border-color:var(--gold);color:var(--gold);}
+  .screen{display:none;animation:fadeIn .3s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* BUTTONS */
+  .btn{padding:10px 24px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+  .btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+  .btn.primary{background:var(--gold);color:#000;border-color:var(--gold);}
+  .btn.primary:hover{background:#ffc94d;}
+  .btn.green{background:rgba(61,214,140,0.12);border-color:var(--green);color:var(--green);}
+
+  /* CODE */
+  pre,.code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;color:#c8c8e8;white-space:pre-wrap;word-break:break-word;}
+  .kw{color:#ff7c7c;}.tp{color:#79dcf0;}.st{color:#b5e8a0;}.cm{color:#5a5a7a;font-style:italic;}.nm{color:var(--gold);}
+
+  /* ══ LEARN ══ */
+  .learn-layout{display:grid;grid-template-columns:210px 1fr;gap:20px;align-items:start;}
+  @media(max-width:680px){.learn-layout{grid-template-columns:1fr;}}
+  .learn-sidebar{position:sticky;top:20px;}
+  .sidebar-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;}
+  .lesson-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
+  .lesson-item{padding:10px 14px;border-radius:7px;cursor:pointer;border:1px solid transparent;font-size:13px;font-weight:700;transition:all .18s;color:var(--muted);display:flex;align-items:center;gap:10px;}
+  .lesson-item:hover{background:var(--card);color:var(--text);border-color:var(--border);}
+  .lesson-item.active{background:rgba(240,180,41,0.1);border-color:var(--gold-dim);color:var(--gold);}
+  .lesson-item.done .l-dot{background:var(--green);}
+  .lesson-item.done{color:var(--green);}
+  .l-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .2s;}
+  .lesson-item.active .l-dot{background:var(--gold);}
+  .learn-progress{margin-bottom:14px;}
+  .lp-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px;}
+  .lp-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .lp-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .5s;}
+
+  /* Lesson content */
+  .lesson-header{margin-bottom:28px;}
+  .lesson-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+  .lesson-title{font-size:24px;font-weight:800;margin-bottom:8px;}
+  .lesson-tagline{font-size:14px;color:var(--muted);line-height:1.6;}
+  .teach-section{margin-bottom:28px;}
+  .teach-label{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;padding:4px 10px;border-radius:4px;margin-bottom:14px;font-weight:700;}
+  .teach-label.hook{background:rgba(176,127,255,0.15);color:var(--purple);border:1px solid rgba(176,127,255,0.3);}
+  .teach-label.explain{background:rgba(92,159,255,0.12);color:var(--blue);border:1px solid rgba(92,159,255,0.25);}
+  .teach-label.example{background:rgba(240,180,41,0.12);color:var(--gold);border:1px solid rgba(240,180,41,0.25);}
+  .teach-label.memory{background:rgba(61,214,140,0.12);color:var(--green);border:1px solid rgba(61,214,140,0.25);}
+  .teach-label.summary{background:rgba(255,92,92,0.1);color:var(--red);border:1px solid rgba(255,92,92,0.25);}
+  .analogy-box{background:rgba(176,127,255,0.07);border:1px solid rgba(176,127,255,0.2);border-radius:10px;padding:18px 20px;font-size:14px;line-height:1.8;}
+  .analogy-box .emoji{font-size:28px;display:block;margin-bottom:10px;}
+  .explain-text{font-size:14px;line-height:1.9;}
+  .explain-text p{margin-bottom:12px;}
+  .explain-text strong{color:var(--gold);}
+  .explain-text code,.step-body code,.analogy-box code{background:var(--code-bg);border:1px solid var(--border);padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#79dcf0;}
+  .steps-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .step-item{display:flex;gap:14px;align-items:flex-start;}
+  .step-num{width:28px;height:28px;border-radius:50%;background:rgba(240,180,41,0.15);border:1px solid var(--gold-dim);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .step-body{font-size:13px;line-height:1.7;flex:1;}
+  .step-body strong{color:var(--text);}
+  .memory-box{background:rgba(61,214,140,0.07);border:1px solid rgba(61,214,140,0.2);border-radius:10px;padding:18px 20px;font-size:14px;line-height:1.8;}
+  .memory-box strong{color:var(--green);}
+  .summary-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .summary-list li{display:flex;gap:10px;font-size:13px;line-height:1.6;}
+  .summary-list li::before{content:'✅';flex-shrink:0;}
+  .summary-list li.warn::before{content:'⚠️';}
+  .summary-list li strong{color:var(--text);}
+  .diagram{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
+  .diagram-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:14px;}
+  .object-box{display:inline-block;border:2px solid var(--blue);border-radius:8px;overflow:hidden;margin:6px;font-family:'JetBrains Mono',monospace;font-size:12px;min-width:140px;}
+  .object-box .ob-name{background:rgba(92,159,255,0.18);padding:7px 12px;font-weight:700;color:var(--blue);border-bottom:1px solid var(--border);}
+  .object-box .ob-field{padding:5px 12px;color:var(--text);border-bottom:1px dashed var(--border);font-size:11px;}
+  .object-box .ob-field:last-child{border-bottom:none;}
+  .array-visual{display:flex;gap:0;margin:12px 0;flex-wrap:wrap;}
+  .arr-cell{border:1px solid var(--border);min-width:50px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;}
+  .arr-cell .arr-idx{background:rgba(240,180,41,0.1);color:var(--gold);padding:3px 6px;font-size:10px;border-bottom:1px solid var(--border);}
+  .arr-cell .arr-val{padding:6px 6px;color:var(--text);}
+  .arr-cell.hl{border-color:var(--green);}
+  .arr-cell.hl .arr-idx{background:rgba(61,214,140,0.15);color:var(--green);}
+  .arr-cell.del{border-color:var(--red);}
+  .arr-cell.del .arr-val{color:var(--red);text-decoration:line-through;}
+
+  /* mini quiz */
+  .mini-quiz{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:20px;}
+  .mq-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:12px;}
+  .mq-q{font-size:14px;font-weight:700;margin-bottom:14px;line-height:1.6;}
+  .mq-choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+  .mq-choice{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 14px;cursor:pointer;font-size:13px;transition:all .15s;font-family:'JetBrains Mono',monospace;}
+  .mq-choice:hover{border-color:var(--gold-dim);}
+  .mq-choice.correct{background:rgba(61,214,140,0.12);border-color:var(--green);color:var(--green);pointer-events:none;}
+  .mq-choice.wrong{background:rgba(255,92,92,0.1);border-color:var(--red);color:var(--red);pointer-events:none;}
+  .mq-choice.dis{pointer-events:none;opacity:.45;}
+  .mq-feedback{font-size:13px;line-height:1.7;padding:12px;background:var(--code-bg);border-radius:6px;display:none;border-left:3px solid var(--gold);}
+  .mq-feedback.show{display:block;animation:fadeIn .2s;}
+  .lesson-footer{display:flex;justify-content:space-between;align-items:center;margin-top:30px;padding-top:20px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+  .lf-center{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+
+  /* ══ OVERVIEW ══ */
+  .labs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+  .lab-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+  .lab-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transition:transform .2s;transform-origin:left;}
+  .lab-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
+  .lab-card:hover::before{transform:scaleX(1);}
+  .lab-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+  .lab-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+  .lab-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+  .lab-classes{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+  .class-tag{background:rgba(92,159,255,0.1);border:1px solid rgba(92,159,255,0.25);color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;}
+
+  /* ══ FLASHCARD ══ */
+  .fc-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+  .fc-select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:6px;font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;outline:none;}
+  .fc-counter{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+  .flashcard{background:var(--card);border:1px solid var(--border);border-radius:14px;min-height:300px;padding:30px;cursor:pointer;transition:border-color .2s;display:flex;flex-direction:column;}
+  .flashcard:hover{border-color:var(--gold-dim);}
+  .fc-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .fc-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .fc-question{font-size:16px;font-weight:700;line-height:1.5;margin-bottom:12px;}
+  .fc-answer{display:none;animation:fadeIn .3s ease;flex:1;}
+  .fc-answer.show{display:block;}
+  .fc-answer pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;overflow-x:auto;color:#c8c8e8;white-space:pre-wrap;word-break:break-word;}
+  .fc-answer p{font-size:13px;line-height:1.7;margin-bottom:8px;}
+  .fc-hint{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;}
+  .fc-nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+
+  /* ══ QUIZ ══ */
+  .quiz-setup{text-align:center;padding:40px 20px;}
+  .quiz-setup h2{font-size:22px;font-weight:800;margin-bottom:10px;}
+  .quiz-setup p{color:var(--muted);margin-bottom:30px;font-size:14px;}
+  .quiz-options{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
+  .quiz-opt-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 22px;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;transition:all .2s;}
+  .quiz-opt-btn:hover,.quiz-opt-btn.sel{background:rgba(240,180,41,0.1);border-color:var(--gold);color:var(--gold);}
+  .q-prog-row{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .progress-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s;}
+  .q-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);white-space:nowrap;}
+  .q-score{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green);}
+  .quiz-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:16px;}
+  .quiz-q-text{font-size:15px;font-weight:700;line-height:1.6;margin-bottom:20px;}
+  .quiz-q-code{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#c8c8e8;margin-bottom:20px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;}
+  .quiz-choices{display:flex;flex-direction:column;gap:10px;}
+  .choice{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;font-size:13px;transition:all .18s;font-family:'JetBrains Mono',monospace;display:flex;align-items:flex-start;gap:10px;}
+  .choice:hover{border-color:var(--gold-dim);background:rgba(240,180,41,0.06);}
+  .choice.correct{background:rgba(61,214,140,0.12);border-color:var(--green);color:var(--green);}
+  .choice.wrong{background:rgba(255,92,92,0.12);border-color:var(--red);color:var(--red);}
+  .choice.disabled{pointer-events:none;}
+  .choice-letter{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;background:var(--border);font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;}
+  .quiz-feedback{background:var(--code-bg);border-radius:8px;padding:14px;margin-top:14px;font-size:13px;line-height:1.7;display:none;border-left:3px solid var(--gold);}
+  .quiz-feedback.show{display:block;animation:fadeIn .2s;}
+  .quiz-result{text-align:center;padding:50px 20px;}
+  .result-score{font-size:64px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:8px;}
+  .result-label{font-size:16px;color:var(--muted);margin-bottom:30px;}
+  .result-breakdown{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
+  .rb-item{text-align:center;}
+  .rb-num{font-size:28px;font-weight:800;}
+  .rb-text{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+  /* ══ CHEATSHEET ══ */
+  .cheat-section{margin-bottom:30px;}
+  .cheat-title{font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px;}
+  .cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
+  .cheat-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;}
+  .cheat-item h4{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--blue);}
+  .cheat-item pre{background:var(--code-bg);border-radius:6px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:#c8c8e8;overflow-x:auto;white-space:pre-wrap;word-break:break-word;}
+  .cheat-item p{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;}
+
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="badge">CIS 104 · AL YAMAMAH UNIVERSITY</div>
+    <h1>Java <span>Exam</span> Prep</h1>
+    <div class="subtitle">Labs 3–6 · OOP · Midterm Ready</div>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-btn" onclick="showScreen('overview',this)">📋 Overview</button>
+    <button class="nav-btn active" onclick="showScreen('learn',this)">📚 Learn</button>
+    <button class="nav-btn" onclick="showScreen('flashcards',this)">🃏 Flashcards</button>
+    <button class="nav-btn" onclick="showScreen('quiz',this)">⚡ Quiz</button>
+    <button class="nav-btn" onclick="showScreen('cheatsheet',this)">📄 Cheat Sheet</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <div class="screen" id="screen-overview">
+    <div class="labs-grid">
+      <div class="lab-card" onclick="goLesson(0)"><div class="lab-num">LESSON 01</div><div class="lab-title">What is a Class?</div><div class="lab-desc">Fields, two constructors, getters & setters explained from zero</div><div class="lab-classes"><span class="class-tag">Car</span></div></div>
+      <div class="lab-card" onclick="goLesson(1)"><div class="lab-num">LESSON 02</div><div class="lab-title">Class Methods</div><div class="lab-desc">void vs return, display(), summation(), computeArea()</div><div class="lab-classes"><span class="class-tag">Rectangle</span></div></div>
+      <div class="lab-card" onclick="goLesson(2)"><div class="lab-num">LESSON 03</div><div class="lab-title">Array Inside a Class</div><div class="lab-desc">nbm counter, add/delete swap trick, search, max, average</div><div class="lab-classes"><span class="class-tag">Student</span></div></div>
+      <div class="lab-card" onclick="goLesson(3)"><div class="lab-num">LESSON 04</div><div class="lab-title">Array of Objects</div><div class="lab-desc">null vs 0, insert/delete/find/oldest for object arrays</div><div class="lab-classes"><span class="class-tag">Company</span><span class="class-tag">Employee</span></div></div>
+      <div class="lab-card" onclick="goLesson(4)"><div class="lab-num">LESSON 05</div><div class="lab-title">Aggregation</div><div class="lab-desc">HAS-A relationship, countGuests, getGuests, splitGuests</div><div class="lab-classes"><span class="class-tag">Hotel</span><span class="class-tag">Guest</span></div></div>
+      <div class="lab-card" onclick="goLesson(5)"><div class="lab-num">LESSON 06 ⭐ NEW</div><div class="lab-title">Arrays (Basics)</div><div class="lab-desc">Declaration, indexing, length, common traps from Q1 & Q2</div><div class="lab-classes"><span class="class-tag">Midterm Q1</span></div></div>
+      <div class="lab-card" onclick="goLesson(6)"><div class="lab-num">LESSON 07 ⭐ NEW</div><div class="lab-title">Output Tracing</div><div class="lab-desc">double type prints .0 · double increment loop trap</div><div class="lab-classes"><span class="class-tag">Midterm Q2</span></div></div>
+      <div class="lab-card" onclick="goLesson(7)"><div class="lab-num">LESSON 08 ⭐ NEW</div><div class="lab-title">Inheritance</div><div class="lab-desc">extends · super() · @Override · polymorphism · instanceof</div><div class="lab-classes"><span class="class-tag">Course</span><span class="class-tag">VideoCourse</span></div></div>
+      <div class="lab-card" onclick="goLesson(8)"><div class="lab-num">LESSON 09 ⭐ NEW</div><div class="lab-title">Exam-Style Practice</div><div class="lab-desc">Department/Student · RentOffice/Car · full trace walkthroughs</div><div class="lab-classes"><span class="class-tag">Midterm Q3</span></div></div>
+    </div>
+  </div>
+
+  <!-- LEARN -->
+  <div class="screen active" id="screen-learn">
+    <div class="learn-layout">
+      <aside class="learn-sidebar">
+        <div class="learn-progress">
+          <div class="lp-row"><span>Progress</span><span id="prog-txt">0 / 9</span></div>
+          <div class="lp-bar"><div class="lp-fill" id="prog-fill" style="width:0%"></div></div>
+        </div>
+        <div class="sidebar-label">LESSONS</div>
+        <ul class="lesson-list" id="lesson-list">
+          <li class="lesson-item active" onclick="goLesson(0)"><span class="l-dot"></span>What is a Class?</li>
+          <li class="lesson-item" onclick="goLesson(1)"><span class="l-dot"></span>Class Methods</li>
+          <li class="lesson-item" onclick="goLesson(2)"><span class="l-dot"></span>Array Inside a Class</li>
+          <li class="lesson-item" onclick="goLesson(3)"><span class="l-dot"></span>Array of Objects</li>
+          <li class="lesson-item" onclick="goLesson(4)"><span class="l-dot"></span>Aggregation</li>
+          <li class="lesson-item" onclick="goLesson(5)"><span class="l-dot"></span>⭐ Arrays (Basics)</li>
+          <li class="lesson-item" onclick="goLesson(6)"><span class="l-dot"></span>⭐ Output Tracing</li>
+          <li class="lesson-item" onclick="goLesson(7)"><span class="l-dot"></span>⭐ Inheritance</li>
+          <li class="lesson-item" onclick="goLesson(8)"><span class="l-dot"></span>⭐ Exam Practice</li>
+        </ul>
+      </aside>
+      <main id="lesson-main"></main>
+    </div>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div class="screen" id="screen-flashcards">
+    <div class="fc-controls">
+      <select class="fc-select" id="fc-lab-select" onchange="loadFC()">
+        <option value="all">All Topics</option>
+        <option value="lab3">Lab 3 — Car & Rectangle</option>
+        <option value="lab4">Lab 4 — Student</option>
+        <option value="lab5">Lab 5 — Company & Employee</option>
+        <option value="lab6">Lab 6 — Hotel & Guest</option>
+        <option value="arrays">⭐ Arrays (Basics)</option>
+        <option value="tracing">⭐ Output Tracing</option>
+        <option value="inheritance">⭐ Inheritance</option>
+      </select>
+      <span class="fc-counter" id="fc-counter">Card 1/1</span>
+    </div>
+    <div>
+      <div class="flashcard" id="flashcard" onclick="toggleAns()">
+        <div class="fc-label">QUESTION</div>
+        <div class="fc-question" id="fc-q">Loading...</div>
+        <div class="fc-hint" id="fc-hint">👆 Tap to reveal</div>
+        <div class="fc-answer" id="fc-ans"></div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="btn" onclick="fcNav(-1)">← Prev</button>
+      <button class="btn primary" onclick="toggleAns()">Reveal / Hide</button>
+      <button class="btn" onclick="fcNav(1)">Next →</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="screen-quiz">
+    <div id="quiz-setup" class="quiz-setup">
+      <h2>Practice Quiz</h2>
+      <p>Random questions from all labs</p>
+      <div class="quiz-options">
+        <button class="quiz-opt-btn sel" onclick="setQN(10,this)">10 Qs</button>
+        <button class="quiz-opt-btn" onclick="setQN(20,this)">20 Qs</button>
+        <button class="quiz-opt-btn" onclick="setQN(999,this)">All</button>
+      </div>
+      <button class="btn primary" onclick="startQuiz()">Start →</button>
+    </div>
+    <div id="quiz-active" style="display:none;">
+      <div class="q-prog-row">
+        <div class="progress-bar"><div class="progress-fill" id="qprog"></div></div>
+        <span class="q-num" id="qnum">1/10</span>
+        <span class="q-score" id="qsc">✓ 0</span>
+      </div>
+      <div id="quiz-qa"></div>
+      <div style="text-align:center;margin-top:16px;">
+        <button class="btn primary" id="q-next" onclick="nextQ()" style="display:none;">Next →</button>
+      </div>
+    </div>
+    <div id="quiz-result" class="quiz-result" style="display:none;"></div>
+  </div>
+
+  <!-- CHEAT SHEET -->
+  <div class="screen" id="screen-cheatsheet">
+    <div class="cheat-section">
+      <div class="cheat-title">LAB 3 — CLASS STRUCTURE</div>
+      <div class="cheat-grid">
+        <div class="cheat-item"><h4>Car Template</h4><pre><span class="kw">public class</span> <span class="nm">Car</span> {
+  <span class="kw">private int</span> door, window;
+  <span class="kw">public</span> <span class="nm">Car</span>() { door=0; window=0; }
+  <span class="kw">public</span> <span class="nm">Car</span>(<span class="tp">int</span> dd, <span class="tp">int</span> ww) { door=dd; window=ww; }
+  <span class="kw">public void</span> display() {
+    System.out.println("doors: "+door);
+    System.out.println("windows: "+window);
+  }
+  <span class="kw">public int</span> getDoor() { <span class="kw">return</span> door; }
+  <span class="kw">public void</span> setDoor(<span class="tp">int</span> door) { <span class="kw">this</span>.door=door; }
+  <span class="kw">public int</span> summation() { <span class="kw">return</span> door+window; }
+}</pre></div>
+        <div class="cheat-item"><h4>Rectangle Methods</h4><pre><span class="kw">public double</span> computeArea() {
+  <span class="kw">return</span> length*width;
+}
+<span class="kw">public double</span> computePerimeter() {
+  <span class="kw">return</span> 2*(length+width);
+}</pre><p>Use <code>this.x=x</code> when param name = field name.</p></div>
+      </div>
+    </div>
+    <div class="cheat-section">
+      <div class="cheat-title">LAB 4 — ARRAY INSIDE A CLASS</div>
+      <div class="cheat-grid">
+        <div class="cheat-item"><h4>Add</h4><pre><span class="kw">if</span>(nbm &lt; arrMarks.length) {
+  arrMarks[nbm]=mark; nbm++;
+  <span class="kw">return true</span>;
+} <span class="kw">else return false</span>;</pre></div>
+        <div class="cheat-item"><h4>Delete (swap trick)</h4><pre>arrMarks[pos]=arrMarks[nbm-1];
+arrMarks[nbm-1]=0;  <span class="cm">// 0 for int!</span>
+nbm--;</pre></div>
+        <div class="cheat-item"><h4>Search</h4><pre><span class="kw">for</span>(i=0;i&lt;nbm;i++)
+  <span class="kw">if</span>(arrMarks[i]==mark) <span class="kw">return</span> i;
+<span class="kw">return</span> -1;</pre></div>
+        <div class="cheat-item"><h4>Average</h4><pre><span class="kw">return</span> (<span class="tp">double</span>)sum/nbm;</pre><p>Cast! Or you lose decimals.</p></div>
+      </div>
+    </div>
+    <div class="cheat-section">
+      <div class="cheat-title">LAB 5 — ARRAY OF OBJECTS</div>
+      <div class="cheat-grid">
+        <div class="cheat-item"><h4>Delete (null not 0)</h4><pre>ArrEmp[pos]=ArrEmp[nbe-1];
+ArrEmp[nbe-1]=<span class="kw">null</span>;
+nbe--;</pre></div>
+        <div class="cheat-item"><h4>Oldest</h4><pre>Employee old=ArrEmp[0];
+<span class="kw">for</span>(i=1;i&lt;nbe;i++)
+  <span class="kw">if</span>(ArrEmp[i].getAge()>old.getAge())
+    old=ArrEmp[i];
+<span class="kw">return</span> old;</pre></div>
+      </div>
+    </div>
+    <div class="cheat-section">
+      <div class="cheat-title">LAB 6 — AGGREGATION</div>
+      <div class="cheat-grid">
+        <div class="cheat-item"><h4>splitGuests</h4><pre><span class="tp">int</span> j=0,k=0;
+<span class="kw">for</span>(i=0;i&lt;nbGuests;i++) {
+  <span class="kw">if</span>(arr[i].getNationality().equals(<span class="st">"Saudi"</span>))
+    saudi[j++]=arr[i];
+  <span class="kw">else</span> expat[k++]=arr[i];
+}
+<span class="kw">return</span> k;</pre></div>
+        <div class="cheat-item"><h4>5 Critical Rules</h4><p style="font-size:13px;line-height:2;color:var(--text);">
+• Strings → <code>.equals()</code> not <code>==</code><br>
+• Object slots → <code>null</code> not <code>0</code><br>
+• Loop to <code>nbe/nbm</code> not <code>array.length</code><br>
+• Average → cast: <code>(double)sum/n</code><br>
+• Setter same name → need <code>this.</code>
+        </p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// LESSON CONTENT
+// ═══════════════════════════════════════
+const LESSONS = [
+{
+  title:"What is a Class?",
+  tag:"Fields · Constructors · Getters · Setters",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">🏗️</span>
+    <strong>A class is a blueprint. An object is the real thing built from it.</strong><br><br>
+    Think of the <code>Car</code> class like a car factory template — it says "every car will have doors and windows".
+    When you do <code>Car toyota = new Car()</code>, you're actually building a real car from that template.<br><br>
+    The template (class) itself doesn't exist as a car — only the objects you create from it do.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 THE 4 PARTS OF EVERY CLASS</div>
+  <div class="explain-text">
+    <p><strong>1. Private Fields</strong> — the data the object stores. Always <code>private</code> so outsiders can't touch them directly.</p>
+    <p><strong>2. Default Constructor</strong> — same name as the class, no parameters, no return type. Sets fields to 0 / empty.</p>
+    <p><strong>3. Parameterized Constructor</strong> — accepts values and assigns them. Same name as class.</p>
+    <p><strong>4. Getters & Setters</strong> — the only controlled way to read/change private fields from outside.</p>
+  </div>
+  <div class="diagram">
+    <div class="diagram-title">CAR CLASS ANATOMY</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+      <div class="object-box">
+        <div class="ob-name">Car</div>
+        <div class="ob-field">🔒 door : int</div>
+        <div class="ob-field">🔒 window : int</div>
+        <div class="ob-field" style="color:var(--green)">+ Car() default</div>
+        <div class="ob-field" style="color:var(--green)">+ Car(dd,ww) params</div>
+        <div class="ob-field" style="color:var(--purple)">+ getDoor() / setDoor()</div>
+        <div class="ob-field" style="color:var(--gold)">+ display()</div>
+        <div class="ob-field" style="color:var(--gold)">+ summation()</div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);max-width:260px;line-height:1.9;padding-top:8px;">
+        🔒 <b style="color:var(--text)">private</b> = locked, no direct access<br>
+        🟢 <b style="color:var(--green)">constructor</b> = how to build the object<br>
+        🟣 <b style="color:var(--purple)">getter/setter</b> = controlled access<br>
+        🟡 <b style="color:var(--gold)">method</b> = what it can do
+      </div>
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 STEP-BY-STEP: Write the Car Class</div>
+  <ul class="steps-list">
+    <li class="step-item"><div class="step-num">1</div><div class="step-body"><strong>Declare:</strong> <code>public class Car { }</code> — everything goes inside the curly braces</div></li>
+    <li class="step-item"><div class="step-num">2</div><div class="step-body"><strong>Fields:</strong> <code>private int door;</code> and <code>private int window;</code> — use private!</div></li>
+    <li class="step-item"><div class="step-num">3</div><div class="step-body"><strong>Default constructor:</strong> <code>public Car() { door=0; window=0; }</code> — no params, set to zero</div></li>
+    <li class="step-item"><div class="step-num">4</div><div class="step-body"><strong>Param constructor:</strong> <code>public Car(int dd, int ww) { door=dd; window=ww; }</code> — use different param names (dd,ww) to avoid needing <code>this.</code></div></li>
+    <li class="step-item"><div class="step-num">5</div><div class="step-body"><strong>Getter:</strong> <code>public int getDoor() { return door; }</code></div></li>
+    <li class="step-item"><div class="step-num">6</div><div class="step-body"><strong>Setter:</strong> <code>public void setDoor(int door) { this.door = door; }</code> — need <code>this.</code> because param name = field name</div></li>
+  </ul>
+  <br>
+  <pre><span class="kw">public class</span> <span class="nm">Car</span> {
+    <span class="kw">private int</span> door;
+    <span class="kw">private int</span> window;
+
+    <span class="kw">public</span> <span class="nm">Car</span>() {
+        door = 0;  window = 0;
+    }
+
+    <span class="kw">public</span> <span class="nm">Car</span>(<span class="tp">int</span> dd, <span class="tp">int</span> ww) {
+        door = dd;  window = ww;
+    }
+
+    <span class="kw">public int</span> getDoor()  { <span class="kw">return</span> door; }
+    <span class="kw">public void</span> setDoor(<span class="tp">int</span> door) {
+        <span class="kw">this</span>.door = door;  <span class="cm">// this.door = field, door = param</span>
+    }
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICK</div>
+  <div class="memory-box">
+    Order inside the class: <strong>"F-C-G-S-M"</strong><br>
+    <strong>F</strong>ields → <strong>C</strong>onstructors → <strong>G</strong>etters → <strong>S</strong>etters → <strong>M</strong>ethods<br><br>
+    = <em>"Fancy Cars Go Super Miles"</em> 🏎️<br><br>
+    <strong>this.</strong> rule: "When the param and field have the <em>same name</em>, say <code>this</code> to point at the field."
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><strong>Class = blueprint</strong>, object = real thing built from it with <code>new</code>.</li>
+    <li><strong>Fields are private</strong> — no direct access from outside.</li>
+    <li><strong>Two constructors</strong>: default (no params → zeroes) and parameterized.</li>
+    <li><strong>Getter returns</strong> the value. <strong>Setter changes</strong> it. Use <code>this.</code> when param name = field name.</li>
+    <li class="warn">Constructors have <strong>no return type</strong> — not even void!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq0">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">Why does setDoor() write <code>this.door = door</code> instead of just <code>door = door</code>?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(0,0,1)">A) It's just style — both work the same</div>
+    <div class="mq-choice" onclick="mqa(0,1,1)">B) Because the param name is the same as the field name — this. tells Java to use the field</div>
+    <div class="mq-choice" onclick="mqa(0,2,1)">C) this. is required in every setter</div>
+    <div class="mq-choice" onclick="mqa(0,3,1)">D) It's required in constructors only</div>
+  </div>
+  <div class="mq-feedback" id="mfb0">✅ Correct! Without <code>this.</code>, Java sees <code>door = door</code> and thinks you're assigning the param to itself — the field never changes. <code>this.door</code> explicitly means "the field on this object".</div>
+</div>`
+},
+{
+  title:"Methods in a Class",
+  tag:"void vs return · display() · summation() · computeArea()",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">🎛️</span>
+    <strong>Methods are what an object can DO.</strong><br><br>
+    Think of a calculator app:<br>
+    • Press "Display" → it shows numbers on screen → <em>does something but gives you nothing back</em> = <code>void</code><br>
+    • Press "=" → it calculates and hands you a result → <em>gives something back</em> = return type like <code>double</code>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 VOID VS RETURN METHODS</div>
+  <div class="explain-text">
+    <p><strong>void</strong> — the method does work but returns nothing. Example: printing to screen.</p>
+    <p><strong>int / double / boolean</strong> — the method calculates something and gives it back. You must use <code>return</code>.</p>
+    <p>The return type is written <em>before</em> the method name: <code>public <strong>double</strong> computeArea()</code></p>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 THE 4 KEY METHODS</div>
+  <pre><span class="cm">// VOID — just prints, gives nothing back</span>
+<span class="kw">public void</span> display() {
+    System.out.println(<span class="st">"The nb of doors is: "</span> + door);
+    System.out.println(<span class="st">"The nb of windows is: "</span> + window);
+}
+
+<span class="cm">// RETURNS INT — adds two fields and returns result</span>
+<span class="kw">public int</span> summation() {
+    <span class="kw">return</span> (door + window);
+}
+
+<span class="cm">// RETURNS DOUBLE — length × width</span>
+<span class="kw">public double</span> computeArea() {
+    <span class="kw">return</span> length * width;
+}
+
+<span class="cm">// RETURNS DOUBLE — 2 × (length + width)</span>
+<span class="kw">public double</span> computePerimeter() {
+    <span class="kw">return</span> 2 * (length + width);
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 USING METHODS IN main()</div>
+  <pre><span class="cm">// Default constructor → use setters to set values</span>
+Car Toyota = <span class="kw">new</span> <span class="nm">Car</span>();
+Toyota.setDoor(2);
+Toyota.setWindow(3);
+Toyota.display();                         <span class="cm">// prints door=2, window=3</span>
+System.out.println(Toyota.summation());  <span class="cm">// prints 5</span>
+
+<span class="cm">// Parameterized constructor → set values immediately</span>
+Car nissan = <span class="kw">new</span> <span class="nm">Car</span>(5, 7);
+nissan.display();
+System.out.println(nissan.summation());  <span class="cm">// prints 12</span>
+
+<span class="cm">// Rectangle</span>
+Rectangle Rec2 = <span class="kw">new</span> <span class="nm">Rectangle</span>(20.75, 17.25);
+System.out.println(Rec2.computeArea());         <span class="cm">// 357.9375</span>
+System.out.println(Rec2.computePerimeter());    <span class="cm">// 76.0</span></pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICK</div>
+  <div class="memory-box">
+    Ask yourself: <strong>"Does the method hand me something back?"</strong><br>
+    Yes → write a return type (int, double...) + use <code>return</code> at the end<br>
+    No → write <code>void</code><br><br>
+    Formulas to memorise:<br>
+    Area = <strong>L × W</strong><br>
+    Perimeter = <strong>2 × (L + W)</strong> — add sides first, then double
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><code>void</code> = does something, returns nothing. Use for display/print.</li>
+    <li>Return type before method name: <code>public double computeArea()</code></li>
+    <li><code>display()</code> uses <code>System.out.println()</code> to print each field.</li>
+    <li><code>computeArea() = length * width</code>, <code>computePerimeter() = 2*(l+w)</code></li>
+    <li class="warn">Non-void methods MUST have a <code>return</code> statement!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq1">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">What is the return type of <code>computePerimeter()</code>?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(1,0,2)">A) void</div>
+    <div class="mq-choice" onclick="mqa(1,1,2)">B) int</div>
+    <div class="mq-choice" onclick="mqa(1,2,2)">C) double</div>
+    <div class="mq-choice" onclick="mqa(1,3,2)">D) String</div>
+  </div>
+  <div class="mq-feedback" id="mfb1">✅ double! Length and width are declared as <code>double</code>, so their sum and the multiplication result are also <code>double</code>. Always match the return type to what's computed.</div>
+</div>`
+},
+{
+  title:"Array Inside a Class",
+  tag:"Student class · nbm counter · add · delete · search · max · average",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">📦</span>
+    <strong>Think of a box with 20 numbered slots — but only some are filled.</strong><br><br>
+    <code>arrMarks</code> = the box (capacity: 20 slots)<br>
+    <code>nbm</code> = a sticky note that says how many slots are actually used<br><br>
+    Adding a mark: put it in slot <code>nbm</code>, then update the sticky note (+1)<br>
+    Deleting: overwrite that slot with the last filled slot, update sticky note (-1)<br>
+    Always loop to <code>nbm</code>, never to the full box size
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 THE STUDENT CLASS FIELDS</div>
+  <pre><span class="kw">private</span> String name;
+<span class="kw">private</span> String Id;
+<span class="kw">private int</span>[] arrMarks;    <span class="cm">// the array</span>
+<span class="kw">private int</span> nbm;           <span class="cm">// how many are currently stored</span>
+
+<span class="cm">// Constructor</span>
+<span class="kw">public</span> <span class="nm">Student</span>(String nn, String idd, <span class="tp">int</span> size) {
+    name = nn;
+    Id = idd;
+    arrMarks = <span class="kw">new int</span>[size];  <span class="cm">// create the array</span>
+    nbm = 0;                      <span class="cm">// starts empty</span>
+}</pre>
+  <div class="diagram">
+    <div class="diagram-title">After addMark(17), addMark(15), addMark(19) — nbm = 3</div>
+    <div class="array-visual">
+      <div class="arr-cell hl"><div class="arr-idx">[0]</div><div class="arr-val">17</div></div>
+      <div class="arr-cell hl"><div class="arr-idx">[1]</div><div class="arr-val">15</div></div>
+      <div class="arr-cell hl"><div class="arr-idx">[2]</div><div class="arr-val">19</div></div>
+      <div class="arr-cell"><div class="arr-idx">[3]</div><div class="arr-val">0</div></div>
+      <div class="arr-cell"><div class="arr-idx">[4]</div><div class="arr-val">0</div></div>
+      <div class="arr-cell"><div class="arr-idx">...</div><div class="arr-val">0</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace;">nbm=3 | Loop: for(i=0; i &lt; 3; i++) — NOT i &lt; array.length</div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 addMark()</div>
+  <ul class="steps-list">
+    <li class="step-item"><div class="step-num">1</div><div class="step-body">Is there space? <code>if(nbm &lt; arrMarks.length)</code></div></li>
+    <li class="step-item"><div class="step-num">2</div><div class="step-body">Insert: <code>arrMarks[nbm] = mark</code> — use nbm as the next empty index</div></li>
+    <li class="step-item"><div class="step-num">3</div><div class="step-body">Update counter: <code>nbm++</code></div></li>
+    <li class="step-item"><div class="step-num">4</div><div class="step-body">Return <code>true</code>. If no space, return <code>false</code>.</div></li>
+  </ul>
+  <br>
+  <pre><span class="kw">public boolean</span> addMark(<span class="tp">int</span> mark) {
+    <span class="kw">if</span>(nbm &lt; arrMarks.length) {
+        arrMarks[nbm] = mark;
+        nbm++;
+        <span class="kw">return true</span>;
+    }
+    <span class="kw">else return false</span>;
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 deletemark() — THE SWAP TRICK</div>
+  <div class="explain-text"><p>Don't shift everything left — that's slow and hard to write. Instead: copy the <strong>last element</strong> into the gap, then shrink the counter.</p></div>
+  <div class="diagram">
+    <div class="diagram-title">deletemark(2) on [17,15,19,35,20,11] — nbm=6</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
+      <div>
+        <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">BEFORE</div>
+        <div class="array-visual">
+          <div class="arr-cell"><div class="arr-idx">[0]</div><div class="arr-val">17</div></div>
+          <div class="arr-cell"><div class="arr-idx">[1]</div><div class="arr-val">15</div></div>
+          <div class="arr-cell del"><div class="arr-idx">[2]</div><div class="arr-val">19</div></div>
+          <div class="arr-cell"><div class="arr-idx">[3]</div><div class="arr-val">35</div></div>
+          <div class="arr-cell"><div class="arr-idx">[4]</div><div class="arr-val">20</div></div>
+          <div class="arr-cell hl"><div class="arr-idx">[5]</div><div class="arr-val">11</div></div>
+        </div>
+      </div>
+      <div style="color:var(--gold);font-size:22px;">→</div>
+      <div>
+        <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">AFTER (nbm=5)</div>
+        <div class="array-visual">
+          <div class="arr-cell"><div class="arr-idx">[0]</div><div class="arr-val">17</div></div>
+          <div class="arr-cell"><div class="arr-idx">[1]</div><div class="arr-val">15</div></div>
+          <div class="arr-cell hl"><div class="arr-idx">[2]</div><div class="arr-val">11</div></div>
+          <div class="arr-cell"><div class="arr-idx">[3]</div><div class="arr-val">35</div></div>
+          <div class="arr-cell"><div class="arr-idx">[4]</div><div class="arr-val">20</div></div>
+          <div class="arr-cell"><div class="arr-idx">[5]</div><div class="arr-val">0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <pre><span class="kw">public boolean</span> deletemark(<span class="tp">int</span> pos) {
+    <span class="kw">if</span>(nbm == 0) <span class="kw">return false</span>;
+    <span class="kw">else</span> {
+        arrMarks[pos] = arrMarks[nbm-1]; <span class="cm">// copy last into gap</span>
+        arrMarks[nbm-1] = 0;             <span class="cm">// clear last (0 for int)</span>
+        nbm--;
+        <span class="kw">return true</span>;
+    }
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 searchMark · maximumMark · averageMarks</div>
+  <pre><span class="cm">// SEARCH — return index or -1</span>
+<span class="kw">public int</span> searchMark(<span class="tp">int</span> mark) {
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbm; i++)
+        <span class="kw">if</span>(arrMarks[i] == mark) <span class="kw">return</span> i;
+    <span class="kw">return</span> -1;
+}
+
+<span class="cm">// MAX — start at [0], loop from i=1</span>
+<span class="kw">public int</span> maximumMark() {
+    <span class="tp">int</span> max = arrMarks[0];
+    <span class="kw">for</span>(<span class="tp">int</span> i=1; i&lt;nbm; i++)
+        <span class="kw">if</span>(arrMarks[i] > max) max = arrMarks[i];
+    <span class="kw">return</span> max;
+}
+
+<span class="cm">// AVERAGE — cast to double before dividing!</span>
+<span class="kw">public double</span> averageMarks() {
+    <span class="tp">int</span> sum = 0;
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbm; i++) sum += arrMarks[i];
+    <span class="kw">if</span>(nbm != 0) <span class="kw">return</span> (<span class="tp">double</span>)sum / nbm;
+    <span class="kw">else return</span> 0.0;
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICKS</div>
+  <div class="memory-box">
+    <strong>Delete swap = "Replace the dead soldier with the last in line, shrink the line."</strong><br><br>
+    <strong>Average cast</strong> = put on 🥽 double goggles before dividing: <code>(double)sum / nbm</code><br><br>
+    <strong>Max trick</strong> = "Give slot [0] the trophy first, then let the others challenge it" → loop starts at i=1
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><strong>nbm</strong> = actual count. Always loop <code>i &lt; nbm</code>, never <code>i &lt; array.length</code>.</li>
+    <li><strong>Add</strong>: check space → insert at <code>[nbm]</code> → <code>nbm++</code>.</li>
+    <li><strong>Delete</strong>: copy <code>[nbm-1]</code> → position → set last to <code>0</code> → <code>nbm--</code>.</li>
+    <li><strong>Search</strong> returns index (or -1). <strong>Max</strong> starts at index 0, loops from i=1.</li>
+    <li class="warn">Average needs <code>(double)sum/nbm</code> — without cast you lose decimals!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq2">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">Array is [17, 15, 19, 35] with nbm=4. After deletemark(1), what is at index 1?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(2,0,2)">A) 15 (unchanged)</div>
+    <div class="mq-choice" onclick="mqa(2,1,2)">B) 19 (shifted left)</div>
+    <div class="mq-choice" onclick="mqa(2,2,2)">C) 35 — the last element moved in</div>
+    <div class="mq-choice" onclick="mqa(2,3,2)">D) 0</div>
+  </div>
+  <div class="mq-feedback" id="mfb2">✅ 35! Swap trick copies <code>arrMarks[nbm-1]</code> = arrMarks[3] = 35 into position 1. Result: [17, 35, 19, 0], nbm=3.</div>
+</div>`
+},
+{
+  title:"Array of Objects",
+  tag:"Company · Employee[] · null not 0 · insert · delete · find · oldest",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">🏢</span>
+    <strong>Lab 4 had an array of numbers. Lab 5 has an array of full objects.</strong><br><br>
+    Same patterns — same idea — but now instead of <code>int[] arrMarks</code> you have <code>Employee[] ArrEmp</code>.<br><br>
+    The only real difference: when you clear an empty slot, you write <code>null</code> instead of <code>0</code>, because you're dealing with objects, not numbers.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 null vs 0 — THE KEY DIFFERENCE</div>
+  <div class="diagram">
+    <div class="diagram-title">Clearing the last slot after delete</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:rgba(92,159,255,0.07);border:1px solid rgba(92,159,255,0.2);border-radius:8px;padding:14px;">
+        <div style="font-size:11px;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:8px;">INT ARRAY (Lab 4)</div>
+        <pre style="font-size:11px;border:none;padding:0;background:transparent;">arrMarks[nbm-1] = 0;</pre>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">0 = "empty number slot"</div>
+      </div>
+      <div style="background:rgba(61,214,140,0.07);border:1px solid rgba(61,214,140,0.2);border-radius:8px;padding:14px;">
+        <div style="font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:8px;">OBJECT ARRAY (Lab 5)</div>
+        <pre style="font-size:11px;border:none;padding:0;background:transparent;">ArrEmp[nbe-1] = null;</pre>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">null = "no object here"</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 ALL COMPANY METHODS</div>
+  <pre><span class="cm">// INSERT</span>
+<span class="kw">public boolean</span> insertEmployee(Employee EE) {
+    <span class="kw">if</span>(nbe == ArrEmp.length) <span class="kw">return false</span>;
+    <span class="kw">else</span> { ArrEmp[nbe]=EE; nbe++; <span class="kw">return true</span>; }
+}
+
+<span class="cm">// DELETE AT POSITION — null not 0!</span>
+<span class="kw">public boolean</span> deleteEmployeeAtPos(<span class="tp">int</span> pos) {
+    <span class="kw">if</span>(nbe==0) <span class="kw">return false</span>;
+    <span class="kw">else</span> {
+        ArrEmp[pos] = ArrEmp[nbe-1];
+        ArrEmp[nbe-1] = <span class="kw">null</span>;
+        nbe--; <span class="kw">return true</span>;
+    }
+}
+
+<span class="cm">// DISPLAY ALL</span>
+<span class="kw">public void</span> displayAll() {
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbe; i++) ArrEmp[i].display();
+}
+
+<span class="cm">// OLDEST — same logic as maximumMark()</span>
+<span class="kw">public</span> Employee oldest() {
+    Employee old = ArrEmp[0];
+    <span class="kw">for</span>(<span class="tp">int</span> i=1; i&lt;nbe; i++)
+        <span class="kw">if</span>(ArrEmp[i].getAge() > old.getAge()) old=ArrEmp[i];
+    <span class="kw">return</span> old;
+}
+
+<span class="cm">// FIND BY NAME — .equals() for String!</span>
+<span class="kw">public boolean</span> findEmployeebyName(String name) {
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbe; i++)
+        <span class="kw">if</span>(ArrEmp[i].getName().equals(name)) <span class="kw">return true</span>;
+    <span class="kw">return false</span>;
+}
+
+<span class="cm">// FIND BY OBJECT — match name AND age</span>
+<span class="kw">public int</span> findEmployee(Employee EE) {
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbe; i++)
+        <span class="kw">if</span>(ArrEmp[i].getName().equals(EE.getName()))
+            <span class="kw">if</span>(ArrEmp[i].getAge()==EE.getAge()) <span class="kw">return</span> i;
+    <span class="kw">return</span> -1;
+}
+
+<span class="cm">// DELETE BY OBJECT — calls findEmployee first</span>
+<span class="kw">public boolean</span> deleteEmployee(Employee EE) {
+    <span class="tp">int</span> x = findEmployee(EE);
+    <span class="kw">if</span>(x != -1) {
+        ArrEmp[x]=ArrEmp[nbe-1]; ArrEmp[nbe-1]=<span class="kw">null</span>; nbe--;
+        <span class="kw">return true</span>;
+    }
+    <span class="kw">return false</span>;
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICK</div>
+  <div class="memory-box">
+    <strong>"Objects use null, numbers use zero."</strong><br><br>
+    String comparison: <strong>NEVER ==, ALWAYS .equals()</strong><br>
+    Memory hook: <em>"== checks if they're twins living at the same address. .equals() checks if they have the same name."</em> 🏠<br><br>
+    <code>deleteEmployee(EE)</code> = findEmployee first → then do the swap trick with the returned index.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li>Array of objects = same patterns as array of ints — just with types like Employee.</li>
+    <li>Clear empty slot with <code>null</code> for objects (not 0).</li>
+    <li><code>displayAll()</code> calls <code>.display()</code> on each element — loop to <code>nbe</code>.</li>
+    <li><code>oldest()</code> uses <code>.getAge()</code> comparisons — same logic as maximumMark.</li>
+    <li class="warn">Strings: always <code>.equals()</code>. Using <code>==</code> will NOT compare content!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq3">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">Why is <code>ArrEmp[nbe-1] = null</code> used instead of <code>= 0</code>?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(3,0,0)">A) Employee is an object type — object array slots must be null, not 0</div>
+    <div class="mq-choice" onclick="mqa(3,1,0)">B) 0 would cause a compile error in any array</div>
+    <div class="mq-choice" onclick="mqa(3,2,0)">C) Both work the same for object arrays</div>
+    <div class="mq-choice" onclick="mqa(3,3,0)">D) nbe is already 0 at that point</div>
+  </div>
+  <div class="mq-feedback" id="mfb3">✅ Correct! You can't assign 0 to an Employee variable — it's not a number. null means "no object here". Always use null for object array slots.</div>
+</div>`
+},
+{
+  title:"Aggregation",
+  tag:"Hotel HAS-A Guest[] · countGuests · getGuests · splitGuests",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">🏨</span>
+    <strong>Aggregation = a HAS-A relationship between two classes.</strong><br><br>
+    A Hotel HAS guests. Guests can exist without the hotel — they have their own name, nationality, age.<br>
+    The Hotel just keeps references to Guest objects in an array.<br><br>
+    Lab 5 was the same idea. Lab 6 just adds the word "Aggregation" and introduces richer search methods like <code>countGuests()</code>, <code>getGuests()</code>, and <code>splitGuests()</code>.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 TWO CLASSES — Guest and Hotel</div>
+  <div class="diagram">
+    <div class="diagram-title">Hotel HAS-A array of Guest</div>
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+      <div class="object-box">
+        <div class="ob-name">Guest</div>
+        <div class="ob-field">guestId : int</div>
+        <div class="ob-field">name : String</div>
+        <div class="ob-field">nationality : String</div>
+        <div class="ob-field">age : int</div>
+        <div class="ob-field" style="color:var(--green)">+ Guest(id,name,nat,age)</div>
+        <div class="ob-field" style="color:var(--purple)">+ getters (no setters)</div>
+        <div class="ob-field" style="color:var(--gold)">+ displayGuestInfo()</div>
+      </div>
+      <div style="font-size:28px;color:var(--gold);align-self:center;">⟶</div>
+      <div class="object-box">
+        <div class="ob-name">Hotel</div>
+        <div class="ob-field">hotelName : String</div>
+        <div class="ob-field">arrGuests[] : Guest</div>
+        <div class="ob-field">nbGuests : int</div>
+        <div class="ob-field" style="color:var(--green)">+ Hotel(name, size)</div>
+        <div class="ob-field" style="color:var(--gold)">+ addGuest(g)</div>
+        <div class="ob-field" style="color:var(--gold)">+ countGuests(n)</div>
+        <div class="ob-field" style="color:var(--gold)">+ getOldestGuest()</div>
+        <div class="ob-field" style="color:var(--gold)">+ getGuests(n)</div>
+        <div class="ob-field" style="color:var(--gold)">+ splitGuests(s,e)</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 ALL HOTEL METHODS</div>
+  <pre><span class="cm">// ADD</span>
+<span class="kw">public boolean</span> addGuest(Guest g) {
+    <span class="kw">if</span>(nbGuests &lt; arrGuests.length) {
+        arrGuests[nbGuests++] = g;  <span class="cm">// insert then increment</span>
+        <span class="kw">return true</span>;
+    }
+    <span class="kw">return false</span>;
+}
+
+<span class="cm">// COUNT by nationality</span>
+<span class="kw">public int</span> countGuests(String n) {
+    <span class="tp">int</span> count=0;
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbGuests; i++)
+        <span class="kw">if</span>(arrGuests[i].getNationality().equals(n)) count++;
+    <span class="kw">return</span> count;
+}
+
+<span class="cm">// OLDEST</span>
+<span class="kw">public</span> Guest getOldestGuest() {
+    Guest oldest = arrGuests[0];
+    <span class="kw">for</span>(<span class="tp">int</span> i=1; i&lt;nbGuests; i++)
+        <span class="kw">if</span>(arrGuests[i].getAge() > oldest.getAge()) oldest=arrGuests[i];
+    <span class="kw">return</span> oldest;
+}
+
+<span class="cm">// GET ARRAY of matching nationality — two counters!</span>
+<span class="kw">public</span> Guest[] getGuests(String n) {
+    Guest guests[] = <span class="kw">new</span> Guest[nbGuests];
+    <span class="tp">int</span> j=0;
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbGuests; i++)
+        <span class="kw">if</span>(arrGuests[i].getNationality().equals(n))
+            guests[j++]=arrGuests[i];
+    <span class="kw">return</span> guests;
+}
+
+<span class="cm">// SPLIT — Saudi vs everyone else. Returns expat count.</span>
+<span class="kw">public int</span> splitGuests(Guest[] saudi, Guest[] expat) {
+    <span class="tp">int</span> j=0, k=0;
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;nbGuests; i++) {
+        <span class="kw">if</span>(arrGuests[i].getNationality().equals(<span class="st">"Saudi"</span>))
+            saudi[j++]=arrGuests[i];
+        <span class="kw">else</span>
+            expat[k++]=arrGuests[i];
+    }
+    <span class="kw">return</span> k;  <span class="cm">// expat count</span>
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 Why two counters in getGuests()?</div>
+  <div class="diagram">
+    <div class="diagram-title">getGuests("Saudi") — i scans all 5 guests, j fills result</div>
+    <div style="font-size:12px;line-height:2.2;font-family:'JetBrains Mono',monospace;">
+      <span style="color:var(--muted)">i=0</span> → Ali (Saudi) ✅ → guests[0]=Ali, <span style="color:var(--green)">j=1</span><br>
+      <span style="color:var(--muted)">i=1</span> → Jack (UK) ❌ skip<br>
+      <span style="color:var(--muted)">i=2</span> → Naef (Saudi) ✅ → guests[1]=Naef, <span style="color:var(--green)">j=2</span><br>
+      <span style="color:var(--muted)">i=3</span> → Ahmad (Egypt) ❌ skip<br>
+      <span style="color:var(--muted)">i=4</span> → Peter (France) ❌ skip<br>
+      <span style="color:var(--green)">Result: [Ali, Naef, null, null, null]</span>
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICK</div>
+  <div class="memory-box">
+    <strong>splitGuests returns k</strong> = expat count. Why k? "K for foreign Kingdom" 🌍<br><br>
+    <strong>getGuests two counters</strong>: <em>"i = inspector scanning everyone, j = judge stamping only the matches"</em><br><br>
+    <strong>addGuest shorthand</strong>: <code>arrGuests[nbGuests++] = g</code> means "insert at current nbGuests, then increment nbGuests". Same as writing it in two lines.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><strong>Aggregation</strong> = Hotel HAS-A Guest[]. Guest exists independently.</li>
+    <li><code>countGuests(n)</code> loops and counts — uses <code>.equals()</code> for nationality.</li>
+    <li><code>getGuests(n)</code> uses two counters: i for source, j for result.</li>
+    <li><code>splitGuests()</code> fills two passed-in arrays and returns the expat count k.</li>
+    <li class="warn">Always <code>.equals()</code> for nationality/name. Never <code>==</code>!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq4">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">What does <code>splitGuests(saudi, expat)</code> return?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(4,0,2)">A) Total number of guests</div>
+    <div class="mq-choice" onclick="mqa(4,1,2)">B) Number of Saudi guests (j)</div>
+    <div class="mq-choice" onclick="mqa(4,2,2)">C) Number of expat guests (k)</div>
+    <div class="mq-choice" onclick="mqa(4,3,2)">D) true if split was successful</div>
+  </div>
+  <div class="mq-feedback" id="mfb4">✅ Returns k — the expat counter. The test code uses this to loop through expat[]: <code>for(int i=0; i &lt; HH.splitGuests(saudi,expat); i++)</code></div>
+</div>`
+},
+
+// ── LESSON 5: Arrays Basics ────────────────────────────
+{
+  title:"Arrays (Basics)",
+  tag:"Declaration · Indexing · arr.length · Common Exam Traps",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">🏨</span>
+    <strong>An array is a hotel corridor — numbered rooms, all the same type.</strong><br><br>
+    Room 0 is the first room (not Room 1!). A corridor of 5 rooms has rooms 0, 1, 2, 3, 4.<br>
+    If you try to enter Room 5 in a 5-room corridor → the hotel throws you out with an error.
+    That's exactly what Java does: <code>ArrayIndexOutOfBoundsException</code>.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 THREE WAYS TO DECLARE AN ARRAY</div>
+  <pre><span class="cm">// Way 1: declare with size (slots are empty/0)</span>
+<span class="tp">int</span>[] arr = <span class="kw">new int</span>[5];          <span class="cm">// 5 slots: [0,0,0,0,0]</span>
+
+<span class="cm">// Way 2: declare with values directly</span>
+<span class="tp">int</span>[] arr = {1, 2, 4, 5, 7};     <span class="cm">// size auto-set to 5</span>
+
+<span class="cm">// Way 3: declare type differently (same result)</span>
+<span class="tp">int</span> arr[] = <span class="kw">new int</span>[5];          <span class="cm">// works, but Way 1 is cleaner</span>
+
+<span class="cm">// WRONG — parentheses instead of brackets!</span>
+<span class="tp">int</span>[] arr = <span class="kw">new int</span>(5);          <span class="cm">// COMPILE ERROR! Use [] not ()</span></pre>
+  <div class="diagram">
+    <div class="diagram-title">Array {1,2,4,5,7} — indices 0 to 4</div>
+    <div class="array-visual">
+      <div class="arr-cell hl"><div class="arr-idx">[0]</div><div class="arr-val">1</div></div>
+      <div class="arr-cell hl"><div class="arr-idx">[1]</div><div class="arr-val">2</div></div>
+      <div class="arr-cell hl"><div class="arr-idx">[2]</div><div class="arr-val">4</div></div>
+      <div class="arr-cell hl"><div class="arr-idx">[3]</div><div class="arr-val">5</div></div>
+      <div class="arr-cell hl"><div class="arr-idx">[4]</div><div class="arr-val">7</div></div>
+      <div class="arr-cell" style="border-color:var(--red);"><div class="arr-idx" style="color:var(--red);">[5]</div><div class="arr-val" style="color:var(--red);">💥</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace;">arr.length = 5 &nbsp;|&nbsp; Last valid index = 4 (length-1) &nbsp;|&nbsp; arr[5] → EXCEPTION</div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 arr.length — IT'S A FIELD, NOT A METHOD</div>
+  <div class="explain-text">
+    <p><strong>arr.length</strong> — no parentheses. It's a <em>field</em> (property) of the array, not a method call.</p>
+    <p><code>arr.length()</code> — WRONG. That's for Strings.</p>
+    <p><code>arr.size()</code> — WRONG. That's for ArrayList.</p>
+    <p><code>arr.getLength()</code> — WRONG. Doesn't exist.</p>
+  </div>
+  <pre><span class="tp">int</span>[] arr = {1, 2, 4, 5, 7};
+System.out.println(arr.length);   <span class="cm">// prints 5 ✅</span>
+System.out.println(arr.length()); <span class="cm">// COMPILE ERROR ✗</span></pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 OBJECT ARRAYS AUTO-INITIALIZE TO null</div>
+  <div class="explain-text">
+    <p>When you create <code>new Person[10]</code>, all 10 slots automatically become <code>null</code>. Java does this for you.</p>
+    <p>You do NOT have to write <code>persons[0] = null; persons[1] = null; ...</code> yourself.</p>
+    <p>You then assign each slot when you're ready: <code>persons[0] = new Person("Ali", 20);</code></p>
+  </div>
+  <pre>Person[] persons = <span class="kw">new</span> Person[10];
+<span class="cm">// All 10 slots are null automatically ← Q8 exam answer</span>
+persons[0] = <span class="kw">new</span> Person(<span class="st">"Ali"</span>, 20);  <span class="cm">// assign when ready</span></pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 REVERSE EVEN NUMBERS — Exam Exercise 2</div>
+  <div class="explain-text"><p>Strategy: fill array forward first, then loop <strong>backwards</strong> from size-1 down to 0, printing only even numbers.</p></div>
+  <pre><span class="cm">// Input: [3, 8, 4, 7, 2]</span>
+<span class="kw">for</span>(<span class="tp">int</span> i = size-1; i &gt;= 0; i--) {   <span class="cm">// go BACKWARD</span>
+    <span class="kw">if</span>(arr[i] % 2 == 0)               <span class="cm">// even check</span>
+        System.out.print(arr[i] + <span class="st">" "</span>);
+}
+<span class="cm">// Trace: i=4→2(even)✅  i=3→7(odd)✗  i=2→4(even)✅  i=1→8(even)✅  i=0→3(odd)✗</span>
+<span class="cm">// Output: 2 4 8</span></pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICKS</div>
+  <div class="memory-box">
+    <strong>Arrays start at 0</strong> — "Room 0 is always first. Last room = length-1."<br><br>
+    <strong>arr.length</strong> — "length has no ()" — it's a tag on the box, not a phone call.<br><br>
+    <strong>Object array = auto-null</strong> — "Java puts NULL placeholders in every slot until you fill them."<br><br>
+    <strong>Even check</strong> = <code>% 2 == 0</code>. Odd = <code>% 2 != 0</code>.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><strong>Correct syntax:</strong> <code>int[] arr = new int[5]</code> — use <code>[]</code> not <code>()</code>.</li>
+    <li><strong>Indices:</strong> 0 to length-1. Accessing index = length throws exception.</li>
+    <li><code>arr.length</code> is a field — NO parentheses. Not <code>.length()</code> or <code>.size()</code>.</li>
+    <li><strong>Object array:</strong> auto-initialized to null when created with <code>new Type[n]</code>.</li>
+    <li class="warn">arr[5] on a size-5 array → <strong>ArrayIndexOutOfBoundsException</strong>!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq5">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">What happens when you run: <code>int[] arr = {1,2,3,4,5}; System.out.println(arr[5]);</code>?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(5,0,3)">A) Prints 0</div>
+    <div class="mq-choice" onclick="mqa(5,1,3)">B) Prints 5</div>
+    <div class="mq-choice" onclick="mqa(5,2,3)">C) Compile error</div>
+    <div class="mq-choice" onclick="mqa(5,3,3)">D) Runtime error — ArrayIndexOutOfBoundsException</div>
+  </div>
+  <div class="mq-feedback" id="mfb5">✅ Runtime error! The array has indices 0–4. Index 5 doesn't exist. Java compiles fine but crashes at runtime with ArrayIndexOutOfBoundsException.</div>
+</div>`
+},
+
+// ── LESSON 6: Output Tracing ───────────────────────────
+{
+  title:"Output Tracing",
+  tag:"double prints .0 · Double increment loop · Step-by-step trace",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">🕵️</span>
+    <strong>Tracing = being the Java compiler in your head.</strong><br><br>
+    The exam gives you code and asks "what does this print?" You don't run it — you trace it step by step, keeping track of every variable's value.<br><br>
+    Two classic traps from your past exam: <strong>(1)</strong> a <code>double</code> field prints <code>130.0</code> not <code>130</code>. <strong>(2)</strong> a loop with two increments skips values.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 TRAP 1 — double TYPE ALWAYS PRINTS .0</div>
+  <div class="explain-text">
+    <p>If a field is declared as <code>double</code>, Java always prints it with a decimal point — even if the value is a whole number.</p>
+    <p><code>int</code> 130 → prints <code>130</code></p>
+    <p><code>double</code> 130 → prints <code>130.0</code></p>
+  </div>
+  <pre><span class="kw">class</span> <span class="nm">Product</span> {
+    <span class="kw">private</span> String name;
+    <span class="kw">private double</span> price;   <span class="cm">// double! not int</span>
+    <span class="kw">public void</span> applyDiscount() {
+        <span class="kw">if</span>(<span class="kw">this</span>.price &gt; 100) <span class="kw">this</span>.price -= 20;
+    }
+    <span class="kw">public void</span> printPrice() {
+        System.out.println(name + <span class="st">" costs "</span> + price);
+    }
+}
+<span class="cm">// Products: Laptop(150), Headphones(80), Monitor(120)</span>
+<span class="cm">// After applyDiscount():</span>
+<span class="cm">// Laptop: 150.0 > 100 → 150.0-20 = 130.0</span>
+<span class="cm">// Headphones: 80.0 NOT > 100 → stays 80.0</span>
+<span class="cm">// Monitor: 120.0 > 100 → 120.0-20 = 100.0</span></pre>
+  <div style="background:rgba(61,214,140,0.07);border:1px solid rgba(61,214,140,0.2);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;">
+    <span style="color:var(--green);">Output:</span><br>
+    Laptop costs 130.0<br>
+    Headphones costs 80.0<br>
+    Monitor costs 100.0
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 TRAP 2 — DOUBLE INCREMENT LOOP</div>
+  <div class="explain-text">
+    <p>A loop with <strong>two increments</strong> — one in the header (<code>++i</code>) and one in the body (<code>i++</code>) — jumps by 2 each full iteration, not 1.</p>
+  </div>
+  <pre><span class="tp">int</span> array_variable[] = <span class="kw">new int</span>[10];
+<span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;10; ++i) {      <span class="cm">// ← increment 1</span>
+    array_variable[i] = i;
+    System.out.print(array_variable[i] + <span class="st">" "</span>);
+    i++;                           <span class="cm">// ← increment 2</span>
+}</pre>
+  <div class="diagram">
+    <div class="diagram-title">TRACE — i jumps by 2 each full iteration</div>
+    <div style="font-size:12px;line-height:2.2;font-family:'JetBrains Mono',monospace;">
+      <span style="color:var(--gold)">i=0</span> → print <span style="color:var(--green)">0</span> → body i++ → i=1 → header ++i → <span style="color:var(--gold)">i=2</span><br>
+      <span style="color:var(--gold)">i=2</span> → print <span style="color:var(--green)">2</span> → body i++ → i=3 → header ++i → <span style="color:var(--gold)">i=4</span><br>
+      <span style="color:var(--gold)">i=4</span> → print <span style="color:var(--green)">4</span> → body i++ → i=5 → header ++i → <span style="color:var(--gold)">i=6</span><br>
+      <span style="color:var(--gold)">i=6</span> → print <span style="color:var(--green)">6</span> → body i++ → i=7 → header ++i → <span style="color:var(--gold)">i=8</span><br>
+      <span style="color:var(--gold)">i=8</span> → print <span style="color:var(--green)">8</span> → body i++ → i=9 → header ++i → i=10<br>
+      <span style="color:var(--red)">i=10: 10 &lt; 10 is FALSE → loop ends</span>
+    </div>
+  </div>
+  <div style="background:rgba(61,214,140,0.07);border:1px solid rgba(61,214,140,0.2);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;margin-top:12px;">
+    <span style="color:var(--green);">Output:</span> 0 2 4 6 8
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 HOW TO TRACE ANY LOOP — 3-COLUMN METHOD</div>
+  <div class="explain-text"><p>When tracing loops in the exam, use 3 columns in your head:</p></div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:12px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:rgba(240,180,41,0.1);border-bottom:1px solid var(--border);">
+      <div style="padding:8px 12px;color:var(--gold);font-weight:700;">i value</div>
+      <div style="padding:8px 12px;color:var(--gold);font-weight:700;">condition?</div>
+      <div style="padding:8px 12px;color:var(--gold);font-weight:700;">prints</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+      <div style="padding:7px 12px;">0</div><div style="padding:7px 12px;color:var(--green);">0&lt;10 ✅</div><div style="padding:7px 12px;">0</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+      <div style="padding:7px 12px;">2</div><div style="padding:7px 12px;color:var(--green);">2&lt;10 ✅</div><div style="padding:7px 12px;">2</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+      <div style="padding:7px 12px;">4</div><div style="padding:7px 12px;color:var(--green);">4&lt;10 ✅</div><div style="padding:7px 12px;">4</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+      <div style="padding:7px 12px;">6</div><div style="padding:7px 12px;color:var(--green);">6&lt;10 ✅</div><div style="padding:7px 12px;">6</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+      <div style="padding:7px 12px;">8</div><div style="padding:7px 12px;color:var(--green);">8&lt;10 ✅</div><div style="padding:7px 12px;">8</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
+      <div style="padding:7px 12px;">10</div><div style="padding:7px 12px;color:var(--red);">10&lt;10 ✗</div><div style="padding:7px 12px;">STOP</div>
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICKS</div>
+  <div class="memory-box">
+    <strong>double → always .0</strong> — "A double always wears a decimal suit, even when the number is whole." 🎩<br><br>
+    <strong>Two increments = skip by 2</strong> — "Two gas pedals in one car — you go twice as fast."<br><br>
+    <strong>Trace method</strong> — always write: i-value | condition | output. Never guess.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><code>double</code> fields always print with <code>.0</code> — 130 becomes 130.0.</li>
+    <li><strong>applyDiscount:</strong> if price &gt; 100 → price -= 20. Otherwise unchanged.</li>
+    <li><strong>Double increment loop:</strong> i++ in body + ++i in header = i jumps by 2.</li>
+    <li>Use 3-column trace table: i-value | condition true/false | what prints.</li>
+    <li class="warn">Even if the exam uses <code>++i</code> vs <code>i++</code> in the header, it doesn't matter here — both add 1.</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq6">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">A Product has <code>private double price = 120</code>. After <code>applyDiscount()</code> (subtracts 20 if &gt; 100), what does <code>printPrice()</code> print?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(6,0,2)">A) Monitor costs 120</div>
+    <div class="mq-choice" onclick="mqa(6,1,2)">B) Monitor costs 100</div>
+    <div class="mq-choice" onclick="mqa(6,2,2)">C) Monitor costs 100.0</div>
+    <div class="mq-choice" onclick="mqa(6,3,2)">D) Monitor costs 20.0</div>
+  </div>
+  <div class="mq-feedback" id="mfb6">✅ Monitor costs 100.0 — 120 &gt; 100 so discount applies: 120 - 20 = 100. But price is <code>double</code>, so Java prints 100.0 not 100.</div>
+</div>`
+},
+
+// ── LESSON 7: Inheritance ──────────────────────────────
+{
+  title:"Inheritance",
+  tag:"extends · super() · @Override · instanceof · Polymorphism",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">👨‍👩‍👦</span>
+    <strong>Inheritance = a child class gets everything from its parent class.</strong><br><br>
+    Think of it like a child inheriting traits from a parent — they automatically have the parent's features (methods + non-private fields), and can add their own extras or override what they don't like.<br><br>
+    <code>Course</code> = parent (has title, instructor)<br>
+    <code>VideoCourse</code> = child (ALSO has title, instructor + its own numberVideos)<br>
+    <code>TextCourse</code> = child (ALSO has title, instructor + its own numberPages)
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label explain">📖 THE 5 KEY CONCEPTS</div>
+  <div class="diagram">
+    <div class="diagram-title">INHERITANCE DIAGRAM</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div class="object-box" style="border-color:var(--gold);min-width:200px;">
+        <div class="ob-name" style="background:rgba(240,180,41,0.15);color:var(--gold);">Course (Parent)</div>
+        <div class="ob-field">- title : String</div>
+        <div class="ob-field">- instructor : String</div>
+        <div class="ob-field" style="color:var(--green);">+ Course(title, instructor)</div>
+        <div class="ob-field" style="color:var(--purple);">+ getTitle() / getInstructor()</div>
+        <div class="ob-field" style="color:var(--gold);">+ display()</div>
+      </div>
+      <div style="display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="color:var(--muted);font-size:20px;">↓ extends</div>
+          <div class="object-box" style="border-color:var(--blue);min-width:200px;">
+            <div class="ob-name">VideoCourse (Child)</div>
+            <div class="ob-field" style="color:var(--muted);font-size:10px;">inherits title, instructor...</div>
+            <div class="ob-field">+ numberVideos : int</div>
+            <div class="ob-field" style="color:var(--green);">+ VideoCourse(title, inst, n)</div>
+            <div class="ob-field" style="color:var(--gold);">@Override display()</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="color:var(--muted);font-size:20px;">↓ extends</div>
+          <div class="object-box" style="border-color:var(--purple);min-width:200px;">
+            <div class="ob-name" style="border-color:var(--purple);color:var(--purple);background:rgba(176,127,255,0.15);">TextCourse (Child)</div>
+            <div class="ob-field" style="color:var(--muted);font-size:10px;">inherits title, instructor...</div>
+            <div class="ob-field">+ numberPages : int</div>
+            <div class="ob-field" style="color:var(--green);">+ TextCourse(title, inst, n)</div>
+            <div class="ob-field" style="color:var(--gold);">@Override display()</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 CONCEPT 1 — extends</div>
+  <pre><span class="kw">public class</span> <span class="nm">VideoCourse</span> <span class="kw">extends</span> <span class="nm">Course</span> {
+    <span class="cm">// VideoCourse now automatically HAS title + instructor from Course</span>
+    <span class="kw">private int</span> numberVideos;   <span class="cm">// its own extra field</span>
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 CONCEPT 2 — super() in Constructor</div>
+  <div class="explain-text"><p>The child can't directly set the parent's <code>private</code> fields (title, instructor). It calls <code>super()</code> to pass the values UP to the parent constructor.</p></div>
+  <pre><span class="kw">public</span> <span class="nm">VideoCourse</span>(String title, String instructor, <span class="tp">int</span> numberVideos) {
+    <span class="kw">super</span>(title, instructor);   <span class="cm">// REQUIRED — sends values to Course constructor</span>
+    <span class="kw">this</span>.numberVideos = numberVideos;
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 CONCEPT 3 — @Override display()</div>
+  <div class="explain-text"><p>The child <em>replaces</em> the parent's display() with its own version. Use <code>super.display()</code> to still call the parent version first.</p></div>
+  <pre><span class="cm">// In Course (parent):</span>
+<span class="kw">public void</span> display() {
+    System.out.println(<span class="st">"Course: "</span> + title + <span class="st">" | "</span> + instructor);
+}
+
+<span class="cm">// In VideoCourse (child):</span>
+@Override
+<span class="kw">public void</span> display() {
+    <span class="kw">super</span>.display();             <span class="cm">// prints "Course: ... | ..."</span>
+    System.out.println(<span class="st">" Videos: "</span> + numberVideos);
+}</pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 CONCEPT 4 — Polymorphism (Course[] holds children)</div>
+  <div class="explain-text"><p>A <code>Course[]</code> array can hold <code>VideoCourse</code> and <code>TextCourse</code> objects — because they ARE Courses. This is polymorphism.</p></div>
+  <pre>Course[] courses = {vc1, vc2, tc1, tc2};  <span class="cm">// mixed types ✅</span>
+
+<span class="cm">// Count Dr. Dhia's courses</span>
+<span class="tp">int</span> dhia = 0;
+<span class="kw">for</span>(Course c : courses)
+    <span class="kw">if</span>(c.getInstructor().equals(<span class="st">"Dr. Dhia"</span>)) dhia++;
+System.out.println(dhia);  <span class="cm">// 3 (vc1, vc2, tc2)</span></pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 CONCEPT 5 — instanceof + Casting</div>
+  <div class="explain-text"><p><code>instanceof</code> checks the real type at runtime. Casting <code>(VideoCourse)c</code> gives access to child-specific methods like <code>getNumberVideos()</code>.</p></div>
+  <pre><span class="cm">// Count TextCourses</span>
+<span class="kw">for</span>(Course c : courses)
+    <span class="kw">if</span>(c <span class="kw">instanceof</span> TextCourse) tcCount++;   <span class="cm">// 2</span>
+
+<span class="cm">// Total videos — needs cast to access getNumberVideos()</span>
+<span class="kw">for</span>(Course c : courses)
+    <span class="kw">if</span>(c <span class="kw">instanceof</span> VideoCourse)
+        totalVideos += ((<span class="nm">VideoCourse</span>) c).getNumberVideos();
+<span class="cm">// 20 + 35 = 55</span>
+
+<span class="cm">// Avg pages — cast to TextCourse</span>
+<span class="kw">for</span>(Course c : courses)
+    <span class="kw">if</span>(c <span class="kw">instanceof</span> TextCourse) {
+        totalPages += ((<span class="nm">TextCourse</span>)c).getNumberPages();
+        tCount++;
+    }
+System.out.println((<span class="tp">double</span>)totalPages/tCount);  <span class="cm">// 175.0</span></pre>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICKS</div>
+  <div class="memory-box">
+    <strong>extends</strong> = "is-a" relationship. VideoCourse IS-A Course.<br><br>
+    <strong>super()</strong> = "calling your parent to set their own stuff." Must be FIRST line in child constructor.<br><br>
+    <strong>@Override</strong> = "I'm replacing your version with mine." Use <code>super.method()</code> to keep the parent's version too.<br><br>
+    <strong>instanceof</strong> = "is this object actually a VideoCourse?" Then cast to get its special methods.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li><code>extends</code> = child inherits all public/protected parent members.</li>
+    <li><code>super(params)</code> in child constructor = sends values to parent's constructor. Must be first line.</li>
+    <li><code>@Override display()</code> = child replaces parent method. Call <code>super.display()</code> to keep parent output.</li>
+    <li><code>Course[]</code> can hold VideoCourse/TextCourse — polymorphism.</li>
+    <li class="warn"><code>instanceof</code> + cast required to access child-specific methods from a parent reference.</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq7">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">Why does the child constructor call <code>super(title, instructor)</code>?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(7,0,1)">A) To call the parent's display() method</div>
+    <div class="mq-choice" onclick="mqa(7,1,1)">B) Because title and instructor are private in Course — only the parent constructor can set them</div>
+    <div class="mq-choice" onclick="mqa(7,2,1)">C) It's optional — only needed for performance</div>
+    <div class="mq-choice" onclick="mqa(7,3,1)">D) To override the parent</div>
+  </div>
+  <div class="mq-feedback" id="mfb7">✅ Correct! title and instructor are <code>private</code> in Course. The child can't touch them directly. It passes the values UP to Course's constructor via <code>super()</code> which then sets them. super() must be the FIRST line in the child constructor.</div>
+</div>`
+},
+
+// ── LESSON 8: Exam Practice ────────────────────────────
+{
+  title:"Exam-Style Practice",
+  tag:"Department/Student · RentOffice/Car · Full output traces",
+  html:`
+<div class="teach-section">
+  <div class="teach-label hook">🌍 REAL-LIFE HOOK</div>
+  <div class="analogy-box">
+    <span class="emoji">📝</span>
+    <strong>This lesson = your exam simulator.</strong><br><br>
+    Both Q3 variants from your past exam are here — Department/Student and RentOffice/Car.
+    These are the same patterns you've learned: aggregation + array of objects + find/count/best methods.
+    Read the code, trace the output, write the class from UML. That's what the exam asks.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 VARIANT A — Department & Student</div>
+  <pre><span class="kw">public class</span> <span class="nm">Student</span> {
+    <span class="kw">private</span> String name;
+    <span class="kw">private double</span> gpa;
+    <span class="kw">public</span> <span class="nm">Student</span>(String name, <span class="tp">double</span> gpa) {
+        <span class="kw">this</span>.name=name; <span class="kw">this</span>.gpa=gpa;
+    }
+    <span class="kw">public</span> String getName() { <span class="kw">return</span> name; }
+    <span class="kw">public double</span> getGpa()  { <span class="kw">return</span> gpa; }
+    <span class="kw">public void</span> display() {
+        System.out.println(<span class="st">"Name: "</span>+name+<span class="st">", GPA: "</span>+gpa);
+    }
+}
+
+<span class="kw">public class</span> <span class="nm">Department</span> {
+    <span class="kw">private</span> String name;
+    <span class="kw">private</span> Student[] list;
+    <span class="kw">private int</span> number;        <span class="cm">// starts at 0, tracks count</span>
+
+    <span class="kw">public</span> <span class="nm">Department</span>(String name, <span class="tp">int</span> number) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.list = <span class="kw">new</span> Student[number];
+        <span class="kw">this</span>.number = 0;   <span class="cm">// ⚠️ must be 0, NOT = number!</span>
+    }
+
+    <span class="kw">public boolean</span> addStudent(Student st) {
+        <span class="kw">if</span>(number &lt; list.length) {
+            list[number]=st; number++; <span class="kw">return true</span>;
+        }
+        <span class="kw">return false</span>;
+    }
+
+    <span class="kw">public void</span> displayAll() {
+        System.out.println(<span class="st">"Department: "</span>+name);
+        <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;number; i++) list[i].display();
+    }
+
+    <span class="kw">public int</span> excellentStudents() {
+        <span class="tp">int</span> count=0;
+        <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;number; i++)
+            <span class="kw">if</span>(list[i].getGpa() &gt;= 3.5) count++;
+        <span class="kw">return</span> count;
+    }
+
+    <span class="kw">public</span> Student bestStudent() {
+        Student best=list[0];
+        <span class="kw">for</span>(<span class="tp">int</span> i=1; i&lt;number; i++)
+            <span class="kw">if</span>(list[i].getGpa() &gt; best.getGpa()) best=list[i];
+        <span class="kw">return</span> best;
+    }
+}</pre>
+  <div class="diagram">
+    <div class="diagram-title">OUTPUT TRACE — Ali(3.8), Sara(2.9), Nora(3.6)</div>
+    <div style="background:var(--code-bg);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;">
+      Department: Computer Science<br>
+      Name: Ali, GPA: 3.8<br>
+      Name: Sara, GPA: 2.9<br>
+      Name: Nora, GPA: 3.6<br>
+      <span style="color:var(--gold)">Excellent students: 2</span> <span style="color:var(--muted)">← Ali(3.8✅) Sara(2.9✗) Nora(3.6✅)</span><br>
+      <span style="color:var(--green)">Best student: Ali GPA: 3.8</span> <span style="color:var(--muted)">← starts Ali, Sara lower, Nora lower</span>
+    </div>
+  </div>
+  <div style="background:rgba(255,92,92,0.08);border:1px solid rgba(255,92,92,0.25);border-radius:8px;padding:14px;margin-top:12px;font-size:13px;line-height:1.8;">
+    ⚠️ <strong style="color:var(--red);">CRITICAL TRAP:</strong> In the constructor, <code>this.number = 0</code> — NOT <code>this.number = number</code>!<br>
+    The parameter <code>number</code> is the <em>capacity</em> (used for array size). The field <code>this.number</code> is the <em>count</em> (starts at 0).
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label example">🔢 VARIANT B — RentOffice & Car</div>
+  <pre><span class="cm">// Key methods only</span>
+<span class="kw">public boolean</span> FindCarByLicense(String license) {
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;number; i++)
+        <span class="kw">if</span>(cars[i].getLicense().equals(license)) <span class="kw">return true</span>;
+    <span class="kw">return false</span>;
+}
+
+<span class="kw">public int</span> countCarsByType(String type) {
+    <span class="tp">int</span> count=0;
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;number; i++)
+        <span class="kw">if</span>(cars[i].getType().equals(type)) count++;
+    <span class="kw">return</span> count;
+}
+
+<span class="kw">public void</span> ReplaceCar(Car newCar, String license) {
+    <span class="kw">for</span>(<span class="tp">int</span> i=0; i&lt;number; i++) {
+        <span class="kw">if</span>(cars[i].getLicense().equals(license)) {
+            cars[i] = newCar;  <span class="cm">// swap the reference</span>
+            <span class="kw">return</span>;
+        }
+    }
+}</pre>
+  <div class="diagram">
+    <div class="diagram-title">OUTPUT TRACE — 4 cars, then replace RER-4456</div>
+    <div style="background:var(--code-bg);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;">
+      ABC-1111 | Toyota | Toyota | 2020<br>
+      XYZ-2222 | Honda | Honda | 2019<br>
+      RER-4456 | Toyota | Toyota | 2021<br>
+      MMM-3333 | Nissan | Nissan | 2022<br>
+      <span style="color:var(--gold)">Toyota count: 2</span><br>
+      After replacement:<br>
+      ABC-1111 | Toyota | Toyota | 2020<br>
+      XYZ-2222 | Honda | Honda | 2019<br>
+      <span style="color:var(--green)">RER-4456 | BMW | BMW | 2023</span> ← replaced<br>
+      MMM-3333 | Nissan | Nissan | 2022
+    </div>
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label memory">🧠 MEMORY TRICKS</div>
+  <div class="memory-box">
+    <strong>Constructor trap</strong> — "capacity goes to the array, counter starts at ZERO."<br>
+    <code>this.list = new Student[number]</code> — uses param for size<br>
+    <code>this.number = 0</code> — counter always starts at 0<br><br>
+    <strong>bestStudent()</strong> = same as oldest() in your labs — start at [0], loop from i=1, compare GPA.<br><br>
+    <strong>ReplaceCar()</strong> = find the index using .equals(), then do <code>cars[i] = newCar</code>. No swap trick needed — you're replacing, not deleting.
+  </div>
+</div>
+<div class="teach-section">
+  <div class="teach-label summary">📋 SUMMARY</div>
+  <ul class="summary-list">
+    <li>Department/RentOffice = aggregation — same pattern as Hotel/Company from your labs.</li>
+    <li><strong>excellentStudents()</strong> = count where GPA &gt;= 3.5. <strong>bestStudent()</strong> = find highest GPA.</li>
+    <li><strong>countCarsByType()</strong> = count where .getType().equals(type).</li>
+    <li><strong>ReplaceCar()</strong> = find by license with .equals(), then cars[i] = newCar.</li>
+    <li class="warn">Constructor: array size = param, count field = 0. Don't mix them up!</li>
+  </ul>
+</div>
+<div class="mini-quiz" id="mq8">
+  <div class="mq-label">QUICK CHECK</div>
+  <div class="mq-q">In the Department constructor, why must you write <code>this.number = 0</code> and NOT <code>this.number = number</code>?</div>
+  <div class="mq-choices">
+    <div class="mq-choice" onclick="mqa(8,0,2)">A) Both are the same — Java handles it</div>
+    <div class="mq-choice" onclick="mqa(8,1,2)">B) Because <code>number</code> is already used for the field name</div>
+    <div class="mq-choice" onclick="mqa(8,2,2)">C) The param <code>number</code> is the capacity. The field tracks count, which starts at 0 — not at capacity</div>
+    <div class="mq-choice" onclick="mqa(8,3,2)">D) this.number is the array size, set by new Student[number]</div>
+  </div>
+  <div class="mq-feedback" id="mfb8">✅ Correct! <code>number</code> param = how many students the array CAN hold. <code>this.number</code> = how many have been added so far = starts at 0. If you wrote <code>this.number = number</code>, your counter would start at 3 and addStudent() would immediately think the array is full.</div>
+</div>`
+}
+];
+
+// ═══════════════════════════════════════
+// LESSON ENGINE
+// ═══════════════════════════════════════
+let curL = 0;
+const done = new Set();
+
+function renderLesson(idx) {
+  curL = idx;
+  const L = LESSONS[idx];
+  document.querySelectorAll('.lesson-item').forEach((el,i) => {
+    el.classList.toggle('active', i===idx);
+    el.classList.toggle('done', done.has(i));
+  });
+  document.getElementById('lesson-main').innerHTML = `
+    <div>
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON ${String(idx+1).padStart(2,'0')} / ${String(LESSONS.length).padStart(2,'0')}</div>
+        <div class="lesson-title">${L.title}</div>
+        <div class="lesson-tagline">${L.tag}</div>
+      </div>
+      ${L.html}
+      <div class="lesson-footer">
+        <button class="btn" onclick="goLesson(${idx-1})" ${idx===0?'style="opacity:.3;pointer-events:none;"':''}>← Prev</button>
+        <span class="lf-center">${idx+1} of ${LESSONS.length}</span>
+        ${idx<LESSONS.length-1
+          ?`<button class="btn primary" onclick="doneNext(${idx})">Next Lesson →</button>`
+          :`<button class="btn green" onclick="doneL(${idx})">✅ Done!</button>`}
+      </div>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function doneNext(i){done.add(i);updProg();goLesson(i+1);}
+function doneL(i){done.add(i);updProg();renderLesson(i);}
+function updProg(){
+  const pct=Math.round(done.size/LESSONS.length*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-txt').textContent=`${done.size} / ${LESSONS.length}`;
+  document.querySelectorAll('.lesson-item').forEach((el,i)=>el.classList.toggle('done',done.has(i)));
+}
+function goLesson(i){
+  if(i<0||i>=LESSONS.length)return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-learn').classList.add('active');
+  document.querySelectorAll('.nav-btn')[1].classList.add('active');
+  renderLesson(i);
+}
+function mqa(lIdx,chosen,correct){
+  const cs=document.querySelectorAll(`#mq${lIdx} .mq-choice`);
+  cs.forEach((c,i)=>{c.onclick=null;if(i===correct)c.classList.add('correct');else if(i===chosen&&chosen!==correct)c.classList.add('wrong');else c.classList.add('dis');});
+  const fb=document.getElementById(`mfb${lIdx}`);if(fb)fb.classList.add('show');
+}
+
+// ═══════════════════════════════════════
+// SCREEN MANAGEMENT
+// ═══════════════════════════════════════
+function showScreen(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='flashcards')loadFC();
+}
+
+// ═══════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════
+const FC={
+  lab3:[
+    {q:"What are the two constructors you must write for every class?",a:`<p><b>Default</b> (no params) → sets to 0. <b>Parameterized</b> → takes values.</p><pre>public Car() { door=0; window=0; }
+public Car(int dd, int ww) { door=dd; window=ww; }</pre>`},
+    {q:"Write getter and setter for private int 'door'.",a:`<pre>public int getDoor() { return door; }
+public void setDoor(int door) { this.door = door; }</pre>`},
+    {q:"When do you need 'this.' inside a setter?",a:`<p>When the parameter name equals the field name. <code>this.door</code> = the field, <code>door</code> = the param.</p>`},
+    {q:"Write summation() for Car.",a:`<pre>public int summation() { return (door + window); }</pre>`},
+    {q:"Write computeArea() and computePerimeter() for Rectangle.",a:`<pre>public double computeArea() { return length * width; }
+public double computePerimeter() { return 2*(length+width); }</pre>`},
+  ],
+  lab4:[
+    {q:"Write the Student constructor. Takes name, Id, and size.",a:`<pre>public Student(String nn, String idd, int size) {
+    name=nn; Id=idd;
+    arrMarks=new int[size]; nbm=0;
+}</pre>`},
+    {q:"Write addMark(int mark).",a:`<pre>public boolean addMark(int mark) {
+    if(nbm < arrMarks.length) {
+        arrMarks[nbm]=mark; nbm++; return true;
+    } else return false;
+}</pre>`},
+    {q:"Write deletemark(int pos). Explain the swap trick.",a:`<pre>public boolean deletemark(int pos) {
+    if(nbm==0) return false;
+    arrMarks[pos]=arrMarks[nbm-1];
+    arrMarks[nbm-1]=0; nbm--; return true;
+}</pre><p>Copy last element into deleted slot, clear last, shrink counter.</p>`},
+    {q:"Write averageMarks(). Why cast to double?",a:`<pre>public double averageMarks() {
+    int sum=0;
+    for(int i=0;i<nbm;i++) sum+=arrMarks[i];
+    if(nbm!=0) return (double)sum/nbm;
+    else return 0.0;
+}</pre><p>Without (double), int/int drops decimals.</p>`},
+    {q:"Write maximumMark().",a:`<pre>public int maximumMark() {
+    int max=arrMarks[0];
+    for(int i=1;i<nbm;i++)
+        if(arrMarks[i]>max) max=arrMarks[i];
+    return max;
+}</pre>`},
+  ],
+  lab5:[
+    {q:"Write insertEmployee(Employee EE).",a:`<pre>public boolean insertEmployee(Employee EE) {
+    if(nbe==ArrEmp.length) return false;
+    else { ArrEmp[nbe]=EE; nbe++; return true; }
+}</pre>`},
+    {q:"Delete at position — what's different vs int array?",a:`<pre>ArrEmp[pos]=ArrEmp[nbe-1];
+ArrEmp[nbe-1]=null;  // null not 0 !
+nbe--;</pre>`},
+    {q:"Write oldest() for Company.",a:`<pre>public Employee oldest() {
+    Employee old=ArrEmp[0];
+    for(int i=1;i<nbe;i++)
+        if(ArrEmp[i].getAge()>old.getAge()) old=ArrEmp[i];
+    return old;
+}</pre>`},
+    {q:"Why use .equals() for String and NOT ==?",a:`<p>== compares memory addresses (are they the exact same object in RAM?). .equals() compares the actual characters. Always use .equals() for Strings.</p>`},
+  ],
+  lab6:[
+    {q:"What does aggregation mean?",a:`<p>One class HAS-A array of objects from another class. The inner objects can exist independently.</p><pre>public class Hotel {
+    private Guest arrGuests[];
+    private int nbGuests;
+}</pre>`},
+    {q:"Write countGuests(String n).",a:`<pre>public int countGuests(String n) {
+    int count=0;
+    for(int i=0;i<nbGuests;i++)
+        if(arrGuests[i].getNationality().equals(n)) count++;
+    return count;
+}</pre>`},
+    {q:"Write splitGuests(). What does it return?",a:`<pre>public int splitGuests(Guest[] saudi, Guest[] expat) {
+    int j=0,k=0;
+    for(int i=0;i<nbGuests;i++) {
+        if(arrGuests[i].getNationality().equals("Saudi"))
+            saudi[j++]=arrGuests[i];
+        else expat[k++]=arrGuests[i];
+    }
+    return k; // expat count
+}</pre>`},
+    {q:"Why does getGuests() need two counters i and j?",a:`<p>i scans all guests. j only advances on a nationality match — keeps the result array packed with no gaps.</p>`},
+  ],
+  arrays:[
+    {q:"What is the correct syntax to create an int array of size 5?",a:`<pre>int[] arr = new int[5];   // ✅ square brackets
+int[] arr = new int(5);   // ✗ WRONG — compile error!</pre>`},
+    {q:"What is the last valid index of int[] arr = new int[5]?",a:`<p>Index 4. Arrays go from 0 to length-1. Accessing arr[5] throws ArrayIndexOutOfBoundsException at runtime.</p>`},
+    {q:"How do you get the number of elements in an array?",a:`<pre>arr.length    // ✅ FIELD — no parentheses!
+arr.length()  // ✗ WRONG — that's for String
+arr.size()    // ✗ WRONG — that's for ArrayList</pre>`},
+    {q:"When you write new Person[10], what are all 10 slots set to?",a:`<p>null — Java automatically initializes all object array slots to null. You then assign each one: persons[0] = new Person(...);</p>`},
+    {q:"Write code to print even numbers in reverse from int[] arr = {3,8,4,7,2}",a:`<pre>for(int i = arr.length-1; i >= 0; i--) {
+    if(arr[i] % 2 == 0)
+        System.out.print(arr[i] + " ");
+}
+// Output: 2 4 8</pre>`},
+  ],
+  tracing:[
+    {q:"price is declared as double. After applyDiscount(), Laptop was 150.0. What does printPrice() print?",a:`<pre>Laptop costs 130.0
+// 150.0 > 100 → 150.0 - 20 = 130.0
+// double always prints .0 even for whole numbers</pre>`},
+    {q:"What does this print? for(int i=0;i<10;++i){ print i; i++; }",a:`<pre>0 2 4 6 8
+// Two increments per iteration: i++ in body + ++i in header
+// i effectively jumps by 2 each loop</pre>`},
+    {q:"Trace: int[] arr={1,2,3,4,5}; What is arr[0]? arr[4]? What about arr[5]?",a:`<p>arr[0] = 1. arr[4] = 5 (last valid index). arr[5] → ArrayIndexOutOfBoundsException at runtime — index 5 doesn't exist in a 5-element array.</p>`},
+  ],
+  inheritance:[
+    {q:"Write the VideoCourse constructor that calls the parent Course constructor.",a:`<pre>public VideoCourse(String title, String instructor, int n) {
+    super(title, instructor); // MUST be first line!
+    this.numberVideos = n;
+}</pre>`},
+    {q:"What does @Override mean and how do you keep the parent's output too?",a:`<pre>@Override
+public void display() {
+    super.display();       // keep parent's output
+    System.out.println(" Videos: " + numberVideos);
+}</pre><p>@Override replaces the parent method with this version.</p>`},
+    {q:"A Course[] holds VideoCourse and TextCourse objects. How do you count only TextCourse?",a:`<pre>int count = 0;
+for(Course c : courses)
+    if(c instanceof TextCourse) count++;
+// instanceof checks real runtime type</pre>`},
+    {q:"How do you access getNumberVideos() from a Course[] element?",a:`<pre>if(c instanceof VideoCourse)
+    total += ((VideoCourse) c).getNumberVideos();
+// Must cast to child type to access child-specific methods</pre>`},
+    {q:"What keyword makes a child class inherit from a parent?",a:`<p><code>extends</code> — e.g. <code>public class VideoCourse extends Course</code>. The child gets all public/protected methods and fields from Course.</p>`},
+  ]
+};
+FC.all=[...FC.lab3,...FC.lab4,...FC.lab5,...FC.lab6,...FC.arrays,...FC.tracing,...FC.inheritance];
+
+let fcCards=[],fcIdx=0;
+function loadFC(){const lab=document.getElementById('fc-lab-select').value;fcCards=shuf([...FC[lab]]);fcIdx=0;renderFC();}
+function renderFC(){const c=fcCards[fcIdx];document.getElementById('fc-q').textContent=c.q;const a=document.getElementById('fc-ans');a.innerHTML=c.a;a.classList.remove('show');document.getElementById('fc-hint').style.display='';document.getElementById('fc-counter').textContent=`Card ${fcIdx+1}/${fcCards.length}`;}
+function toggleAns(){const a=document.getElementById('fc-ans');a.classList.toggle('show');document.getElementById('fc-hint').style.display=a.classList.contains('show')?'none':'';}
+function fcNav(d){fcIdx=(fcIdx+d+fcCards.length)%fcCards.length;renderFC();}
+
+// ═══════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════
+const QQ=[
+  {q:"What keyword refers to the current object's field when param name = field name?",ch:["super","this","self","my"],c:1,e:"this.field = param when they share a name."},
+  {q:"In deletemark(), what value clears the last int slot?",ch:["null","-1","0","array.length"],c:2,e:"0 for int arrays. null for object arrays."},
+  {q:"Which compares Strings correctly?",ch:["str1==str2","str1.compare(str2)","str1.equals(str2)","str1.same(str2)"],c:2,e:".equals() compares content. == compares memory addresses."},
+  {q:"What does searchMark() return if NOT found?",ch:["0","false","-1","null"],c:2,e:"Returns -1 — standard Java convention for 'not found'."},
+  {q:"What does nbm represent in the Student class?",code:"private int[] arrMarks;\nprivate int nbm;",ch:["Max array size","Count of currently stored elements","Last mark added","Sum of marks"],c:1,e:"nbm tracks how many slots are filled. Array capacity may be much larger."},
+  {q:"Object array vs int array — which uses null to clear a slot?",ch:["int array","Object array","Both","Neither"],c:1,e:"Objects use null. Primitives (int, double) use 0."},
+  {q:"Why write (double)sum/nbm in averageMarks()?",ch:["To make it negative","To avoid integer division losing decimals","For large numbers","Java syntax requires it"],c:1,e:"Without cast, int÷int drops all decimals. (double)sum forces float division."},
+  {q:"In displayAll(), what is the correct loop limit?",ch:["ArrEmp.length","nbe","ArrEmp.size()","ArrEmp.length-1"],c:1,e:"nbe = actual count. Slots from nbe to array.length are null."},
+  {q:"What does splitGuests() return?",ch:["Total guests","Saudi count","Expat count (k)","true/false"],c:2,e:"Returns k = expat counter. The arrays are filled as output parameters."},
+  {q:"In addMark(), where is the new mark inserted?",code:"arrMarks[nbm] = mark;\nnbm++;",ch:["arrMarks[0]","arrMarks[nbm]","arrMarks[nbm-1]","arrMarks[nbm+1]"],c:1,e:"nbm is the next empty index. Insert there, then increment."},
+  {q:"What is aggregation?",ch:["Inheritance","A class containing an array of another class's objects","Two classes with the same methods","A method returning an object"],c:1,e:"Hotel HAS-A Guest[]. Guest exists independently of Hotel."},
+  {q:"findEmployee(EE) checks which two things?",ch:["Only name","Only age","Name AND age","Name AND Id"],c:2,e:"Both getName().equals() AND getAge()==EE.getAge() must match."},
+  {q:"Car toyota = new Car() — which constructor runs?",ch:["Parameterized","Default","No constructor","Copy constructor"],c:1,e:"No arguments → default constructor. new Car(5,7) → parameterized."},
+  {q:"In getGuests(n), why are there counters i AND j?",ch:["i scans all; j fills result only on match","They track two hotels","Java requires two","i=Saudi, j=expat"],c:0,e:"i iterates all guests. j only advances when a nationality match is found."},
+  {q:"Which correctly creates an Employee array of size 10?",ch:["new Employee()","new Employee[10]","Employee[10]","new int[10]"],c:1,e:"new Employee[10] — creates array of 10 object references. Don't forget []."},
+  // ── New: Arrays ──
+  {q:"What is the correct syntax to declare an array of 5 ints?",ch:["int arr = new int(5)","int[] arr = new int[5]","array arr = new int[5]","int arr[] = int[5]"],c:1,e:"int[] arr = new int[5] — square brackets for both the type and the size. Parentheses () are wrong."},
+  {q:"int[] arr = {1,2,3,4,5}; What does arr[5] do?",ch:["Prints 5","Prints 0","Compile error","Runtime ArrayIndexOutOfBoundsException"],c:3,e:"Indices go 0 to 4. Index 5 doesn't exist → ArrayIndexOutOfBoundsException at runtime. Compiles fine but crashes when run."},
+  {q:"How do you get the length of an array in Java?",ch:["arr.length()","arr.size()","arr.getLength()","arr.length"],c:3,e:"arr.length — no parentheses! It's a field, not a method. .length() is for String, .size() is for ArrayList."},
+  {q:"What are all slots set to when you write: Person[] p = new Person[10]?",ch:["0","Empty string","null","Random garbage values"],c:2,e:"Java automatically sets all object array slots to null. You assign them later: p[0] = new Person(...);"},
+  {q:"What does % 2 == 0 check?",ch:["If number is odd","If number is zero","If number is even","If number is positive"],c:2,e:"% is the modulo (remainder) operator. If the remainder after dividing by 2 is 0, the number is even."},
+  // ── New: Tracing ──
+  {q:"price is a double field. After subtracting 20 from 150.0, what does println(price) print?",ch:["130","130.0","130.00","13E1"],c:1,e:"double always prints with .0. 150.0 - 20 = 130.0. Even whole-number doubles print with the decimal."},
+  {q:"A loop has ++i in the header AND i++ inside the body. Starting at i=0, what are the first 3 values of i when body executes?",ch:["0,1,2","0,2,4","1,3,5","2,4,6"],c:1,e:"i=0 → body runs (prints 0) → body i++ makes i=1 → header ++i makes i=2. Then i=2 → prints 2 → i=3 → i=4. Pattern: 0,2,4..."},
+  {q:"double 120 > 100, so applyDiscount() subtracts 20. What does printPrice() print for 'Monitor'?",ch:["Monitor costs 100","Monitor costs 100.0","Monitor costs 20.0","Monitor costs 120.0"],c:1,e:"120 > 100 → 120 - 20 = 100. But price is double → prints 100.0 not 100."},
+  // ── New: Inheritance ──
+  {q:"What keyword makes VideoCourse inherit from Course?",ch:["implements","super","extends","inherits"],c:2,e:"extends — public class VideoCourse extends Course. The child automatically gets all public/protected members of the parent."},
+  {q:"Why must the child constructor call super(title, instructor)?",ch:["To copy methods from Course","title and instructor are private in Course — only parent constructor can set them","It's optional in Java","To override display()"],c:1,e:"Private fields can't be accessed by the child directly. super() passes the values up to the parent constructor which sets them. Must be the FIRST line."},
+  {q:"What does instanceof check?",ch:["If two objects have the same value","The actual runtime type of an object","If a class extends another","The number of objects created"],c:1,e:"c instanceof TextCourse returns true if c's actual type is TextCourse (or any subclass). Used to safely cast."},
+  {q:"Course[] can hold VideoCourse objects. What Java concept is this?",ch:["Aggregation","Encapsulation","Polymorphism","Overloading"],c:2,e:"Polymorphism — a parent type reference can hold child type objects. VideoCourse IS-A Course, so it fits in Course[]."},
+  {q:"To call getNumberVideos() on a Course variable c, what must you do first?",ch:["Nothing — it's inherited","Cast: ((VideoCourse)c).getNumberVideos()","Use super.getNumberVideos()","Call c.getVideos()"],c:1,e:"Must cast to the child type first. Course doesn't have getNumberVideos() — only VideoCourse does. Use instanceof to check before casting."},
+];
+
+let qN=10,qPool=[],qIdx=0,qSc=0,qAns=false;
+function setQN(n,btn){qN=n;document.querySelectorAll('.quiz-opt-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+function startQuiz(){qPool=shuf([...QQ]).slice(0,Math.min(qN,QQ.length));qIdx=0;qSc=0;qAns=false;document.getElementById('quiz-setup').style.display='none';document.getElementById('quiz-result').style.display='none';document.getElementById('quiz-active').style.display='block';renderQ();}
+function renderQ(){qAns=false;const q=qPool[qIdx],tot=qPool.length;document.getElementById('qprog').style.width=(qIdx/tot*100)+'%';document.getElementById('qnum').textContent=`${qIdx+1}/${tot}`;document.getElementById('qsc').textContent=`✓ ${qSc}`;document.getElementById('q-next').style.display='none';let h=`<div class="quiz-card"><div class="quiz-q-text">${q.q}</div>`;if(q.code)h+=`<div class="quiz-q-code">${esc(q.code)}</div>`;h+=`<div class="quiz-choices">`;['A','B','C','D'].forEach((l,i)=>{h+=`<div class="choice" id="ch${i}" onclick="selC(${i})"><span class="choice-letter">${l}</span><span>${q.ch[i]}</span></div>`;});h+=`</div><div class="quiz-feedback" id="qfb"></div></div>`;document.getElementById('quiz-qa').innerHTML=h;}
+function selC(i){if(qAns)return;qAns=true;const q=qPool[qIdx];document.querySelectorAll('.choice').forEach(c=>c.classList.add('disabled'));document.getElementById('ch'+i).classList.add(i===q.c?'correct':'wrong');if(i!==q.c)document.getElementById('ch'+q.c).classList.add('correct');if(i===q.c)qSc++;const fb=document.getElementById('qfb');fb.innerHTML=(i===q.c?'✅ ':'❌ ')+q.e;fb.classList.add('show');document.getElementById('qsc').textContent=`✓ ${qSc}`;const nb=document.getElementById('q-next');nb.style.display='inline-block';nb.textContent=qIdx+1<qPool.length?'Next →':'See Results →';}
+function nextQ(){qIdx++;if(qIdx>=qPool.length)showRes();else renderQ();}
+function showRes(){document.getElementById('quiz-active').style.display='none';const tot=qPool.length,pct=Math.round(qSc/tot*100);const g=pct>=90?'🏆 Excellent!':pct>=70?'👍 Good Job':pct>=50?'📖 Keep Studying':'💪 Review More';document.getElementById('quiz-result').innerHTML=`<div class="result-score">${pct}%</div><div class="result-label">${g}</div><div class="result-breakdown"><div class="rb-item"><div class="rb-num" style="color:var(--green)">${qSc}</div><div class="rb-text">CORRECT</div></div><div class="rb-item"><div class="rb-num" style="color:var(--red)">${tot-qSc}</div><div class="rb-text">WRONG</div></div><div class="rb-item"><div class="rb-num">${tot}</div><div class="rb-text">TOTAL</div></div></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button class="btn primary" onclick="startQuiz()">Retry →</button><button class="btn" onclick="document.getElementById('quiz-result').style.display='none';document.getElementById('quiz-setup').style.display='block'">Change</button></div>`;document.getElementById('quiz-result').style.display='block';}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Init
+renderLesson(0);
+loadFC();
+</script>
+</body>
+</html>
